@@ -1,27 +1,15 @@
 pragma solidity ^0.4.24;
+import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract HelloWorld {
-    // Track the owner
-    address internal owner;
-
-    constructor() public {
-        owner = msg.sender; // Deployer of contract
-    }
-
+contract HelloWorld is Ownable {
     // Log string
     event Hello(string _msg);
-
-    modifier onlyOwner {
-        require(msg.sender == owner, "You must be the contract owner");
-        _;
-    }
 
     function hello(string _msg) external onlyOwner {
         emit Hello(_msg); // Note emit keyword
     }
 
-    function transferOwnership(address _owner) external onlyOwner returns(address) {
-        owner = _owner;
-        return owner;
+    function transferOwnership(address _owner) public onlyOwner {
+        super.transferOwnership(_owner);
     }
 }
