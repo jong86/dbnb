@@ -6,6 +6,7 @@ contract Property is HelloWorld {
     address public currentGuest;
     
     function inviteGuest(address _guest) external onlyOwner returns(address) {
-        return currentGuest = _guest;
+        currentGuest = _guest;
+        return currentGuest;
     }
 }
