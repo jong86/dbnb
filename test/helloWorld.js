@@ -1,5 +1,3 @@
-//jshint ignore: start
-
 // Contracts
 const HelloWorld = artifacts.require('./HelloWorld.sol')
 
