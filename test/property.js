@@ -1,11 +1,16 @@
 const Property = artifacts.require('./Property.sol')
-var Web3 = require('web3');
-var web3 = new Web3(Web3.givenProvider || 'http://localhost:9545');
+const Web3 = require('web3');
+const web3 = new Web3('http://localhost:9545');
+const ethTx = require('ethereumjs-tx');
+const BN = web3.utils.BN;
+
 
 contract('Property Contract tests', async accounts => {
   let property
+
   const alice = accounts[0];
-  const bob = accounts[1];
+  const bob = "0xf17f52151ebef6c7334fad080c5704d77216b732";
+  const bobPrivateKey = "ae6ae8e5ccbfb04590405997ee2d52d2b330726137b875053c36d94e974d162f";
   const carol = accounts[2];
 
   it('should be deployed', async () => {
@@ -45,37 +50,54 @@ contract('Property Contract tests', async accounts => {
   })
 
   it('bob is refunded money if sends wrong amount of ether', async () => {
-    const balance1 = await web3.eth.getBalance(bob);
-
     const encodedFunctionCall = await web3.eth.abi.encodeFunctionCall({
       name: 'reserveRoom',
       type: 'function',
       inputs: [],
     }, []);
 
-    const txObject = {
+    const gasPrice = 420000000000;
+
+    const txData = {
+      nonce: await web3.eth.getTransactionCount(bob),
+      gasPrice: Web3.utils.toHex(gasPrice),
+      gasLimit: '0x30000',
       to: property.address,
-      from: bob,
+      value: Web3.utils.toHex(Web3.utils.toWei('0.1', 'ether')),
       data: encodedFunctionCall,
-      value: Web3.utils.toWei('0.1', 'ether'),
     }
 
-    var tx = new Tx(rawTx);
-    tx.sign(privateKey);
-    
-    var serializedTx = tx.serialize();
+    const tx = new ethTx(txData);
 
+    // Get the hash to use for getting receipt after
+    const txHashHexString = String(web3.utils.bytesToHex([...tx.hash()]));
+
+    // Sign the tx and prepare for sending
+    const privKey = Buffer.from(bobPrivateKey, 'hex');
+    tx.sign(privKey);
+    const rawTx = '0x' + tx.serialize().toString('hex');
+
+    // The 'before' balance
+    const balance1 = new BN(await web3.eth.getBalance(bob));
+
+    // Put this in a try/catch so the function continues after expected revert error
     try {
-      const response = await web3.eth.sendTransaction(txObject)
-      console.log('response', response);
-
+      await web3.eth.sendSignedTransaction(rawTx);
     } catch (e) {
-      const balance2 = await web3.eth.getBalance(bob);  
-      console.log('balance diff', balance1 - balance2);
-      return assert(balance1 === balance2, 'bob was not refunded money')
+      // Not worried about the error here
     }
 
-    assert(false, 'bob was not refunded money')
+    // The 'after' balance
+    const balance2 = new BN(await web3.eth.getBalance(bob));  
+
+    // At last, my oh-so sought-after transaction receipt
+    const receipt = await web3.eth.getTransactionReceipt(txHashHexString);
+
+    const etherUsed = new BN(String(receipt.gasUsed * gasPrice));
+
+    const comparison = balance1.cmp(balance2.add(etherUsed)); // Evaluates to 0 if the values are equal
+
+    return assert(!comparison, 'bob was not refunded money')
   })
 
   it('carol, an uninvited guest cannot reserve the room', async () => {
