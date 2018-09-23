@@ -1,7 +1,5 @@
-// Contracts
 const HelloWorld = artifacts.require('./HelloWorld.sol')
 
-// Tests
 contract('HelloWorld Contract tests', async accounts => {
   let helloWorld;
   const message = 'hello world'
