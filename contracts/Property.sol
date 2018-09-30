@@ -1,25 +1,26 @@
 pragma solidity ^0.4.24;
 
-import "./HelloWorld.sol";
+import "./Ownable.sol";
+import "openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 
-contract Property is HelloWorld {
-    address public currentGuest;
+contract Property is ERC721Token {
+  constructor (string _name, string _symbol) public ERC721Token(_name, _symbol) {
+  }
 
-    modifier onlyGuest() {
-        require(msg.sender == currentGuest, "Only the invited guest can make this action");
-        _;
-    }
-    
-    function inviteGuest(address _guest) external onlyOwner returns (address) {
-        currentGuest = _guest;
-        return currentGuest;
-    }
+  modifier onlyOwner(uint256 _tokenId) {
+    require(tokenOwner[_tokenId] == msg.sender, "You must be the token owner");
+    _;
+  }
 
-    function reserveRoom() external payable onlyGuest returns (bool) {
-        if (msg.value == 1 ether) {
-            return true;
-        } else {
-            revert("Incorrect value sent in message");
-        }
-    }
+  function createProperty() external {
+    _mint(msg.sender, allTokens.length + 1);
+  }
+
+  function setURI(uint256 _tokenId, string _uri) external onlyOwner(_tokenId) {
+    _setTokenURI(_tokenId, _uri);
+  }
+
+  function getURI(uint256 _tokenId) external view returns (string) {
+    return tokenURIs[_tokenId];
+  }
 }
