@@ -3,6 +3,8 @@ pragma solidity ^0.4.24;
 import "openzeppelin-solidity/contracts/token/ERC721/ERC721Basic.sol";
 
 contract PropertyRegistry {
+  ERC721Basic property;
+
   mapping (uint256 => Data) public stayData;
 
   struct Data {
@@ -23,5 +25,9 @@ contract PropertyRegistry {
 
   function registerProperty(uint256 _tokenId, uint256 _price) external onlyOwner(_tokenId) {
     stayData[_tokenId] = Data(_price, 0, address(0));
+  }
+
+  function request() external pure returns (uint) {
+    return 5;
   }
 }
