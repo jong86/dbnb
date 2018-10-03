@@ -30,6 +30,7 @@ contract PropertyRegistry {
   }
 
   function request(uint _tokenId, uint _checkIn, uint _checkOut) external {
+    require(registeredProperties[_tokenId].occupant == address(0), "A request is already pending");
     registeredProperties[_tokenId].checkIn = _checkIn;
     registeredProperties[_tokenId].checkOut = _checkOut;
     registeredProperties[_tokenId].occupant = msg.sender;
@@ -40,6 +41,8 @@ contract PropertyRegistry {
   }
 
   function checkIn(uint _tokenId) external {
+    require(registeredProperties[_tokenId].occupant == msg.sender, "You are not the guest");
+    require(registeredProperties[_tokenId].checkIn <= block.number, "It is not time to check-in yet");
     registeredProperties[_tokenId].isCheckedIn = true;
   }
 

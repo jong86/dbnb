@@ -1,7 +1,7 @@
 const Property = artifacts.require('./Property.sol')
 const PropertyRegistry = artifacts.require('./PropertyRegistry.sol')
 
-// Caught errors are ignored in some negative test cases so function still reaches assert()
+// Note: Caught errors are ignored in some negative test cases so function still reaches assert()
 
 contract('Property Contract tests', async accounts => {
   const owner = accounts[0];
@@ -99,16 +99,16 @@ contract('Property Contract tests', async accounts => {
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, blockNumber + 1, blockNumber + 3, { from: bob })
     try {
-      await propertyRegistry.request(tokenId, blockNumber + 1, blockNumber + 3, { from: eve })
+      await propertyRegistry.request(tokenId, blockNumber + 6, blockNumber + 8, { from: eve })
     } catch (e) {}
     const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[2].toString() !== String(blockNumber + 1), 'could make a request')
+    assert(registeredProperty[1].toString() === bob, 'eve could make a request')
   })
 
 
   // Request approvals
 
-  it('owner can approve bob\'s request', async () => {
+  it('should allow owner to approve bob\'s request', async () => {
     const property = await Property.new('A', 'A', { from: owner})
     const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
     const response = await property.createProperty({ from: owner })
@@ -120,7 +120,7 @@ contract('Property Contract tests', async accounts => {
     assert(registeredProperty[4] === true, 'could not approve')
   })
 
-  it('eve cannot approve bob\'s request', async () => {
+  it('should not let eve approve bob\'s request', async () => {
     const property = await Property.new('A', 'A', { from: owner})
     const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
     const response = await property.createProperty({ from: owner })
@@ -173,10 +173,27 @@ contract('Property Contract tests', async accounts => {
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, blockNumber + 5, blockNumber + 8, { from: bob })
     await propertyRegistry.approveRequest(tokenId, { from: owner })
-    await propertyRegistry.checkIn(tokenId, { from: bob })
+    try {
+      await propertyRegistry.checkIn(tokenId, { from: bob })
+    } catch (e) {}
     const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
     assert(registeredProperty[5] === false, 'could check-in')
   })
+
+  // it('bob CANNOT check-in after owner has approved, and check-out time has passed', async () => {
+  //   const property = await Property.new('A', 'A', { from: owner})
+  //   const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
+  //   const response = await property.createProperty({ from: owner })
+  //   const blockNumber = response.receipt.blockNumber
+  //   const tokenId = response.logs[0].args._tokenId
+  //   await propertyRegistry.request(tokenId, blockNumber - 2, blockNumber - 1, { from: bob })
+  //   await propertyRegistry.approveRequest(tokenId, { from: owner })
+  //   try {
+  //     await propertyRegistry.checkIn(tokenId, { from: bob })
+  //   } catch (e) {}
+  //   const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
+  //   assert(registeredProperty[5] === false, 'could check-in')
+  // })
 
 
   // Checking out
@@ -187,7 +204,7 @@ contract('Property Contract tests', async accounts => {
     const response = await property.createProperty({ from: owner })
     const blockNumber = response.receipt.blockNumber
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, blockNumber + 5, blockNumber + 8, { from: bob })
+    await propertyRegistry.request(tokenId, blockNumber, blockNumber + 2, { from: bob })
     await propertyRegistry.approveRequest(tokenId, { from: owner })
     await propertyRegistry.checkIn(tokenId, { from: bob })
     await propertyRegistry.checkOut(tokenId, { from: bob })
