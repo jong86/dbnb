@@ -85,22 +85,20 @@ contract('Property Contract tests', async accounts => {
     const property = await Property.new('A', 'A', { from: owner})
     const propertyRegistry = await PropertyRegistry.new(property.address, { from: alice })
     const response = await property.createProperty({ from: owner })
-    const blockNumber = response.receipt.blockNumber
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, now(), blockNumber + 3, { from: bob })
+    await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
     const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[2].toString() === String(blockNumber + 1), 'could not make a request')
+    assert(registeredProperty[2].toString() === String(now()), 'could not make a request')
   })
 
   it('should not allow eve to submit request after bob has submitted one', async () => {
     const property = await Property.new('A', 'A', { from: owner})
     const propertyRegistry = await PropertyRegistry.new(property.address, { from: eve })
     const response = await property.createProperty({ from: owner })
-    const blockNumber = response.receipt.blockNumber
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, blockNumber + 1, blockNumber + 3, { from: bob })
+    await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
     try {
-      await propertyRegistry.request(tokenId, blockNumber + 6, blockNumber + 8, { from: eve })
+      await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: eve })
     } catch (e) {}
     const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
     assert(registeredProperty[1].toString() === bob, 'eve could make a request')
@@ -113,9 +111,8 @@ contract('Property Contract tests', async accounts => {
     const property = await Property.new('A', 'A', { from: owner})
     const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
     const response = await property.createProperty({ from: owner })
-    const blockNumber = response.receipt.blockNumber
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, blockNumber + 1, blockNumber + 3, { from: bob })
+    await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
     await propertyRegistry.approveRequest(tokenId, { from: owner })
     const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
     assert(registeredProperty[4] === true, 'could not approve')
@@ -125,9 +122,8 @@ contract('Property Contract tests', async accounts => {
     const property = await Property.new('A', 'A', { from: owner})
     const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
     const response = await property.createProperty({ from: owner })
-    const blockNumber = response.receipt.blockNumber
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, blockNumber + 1, blockNumber + 3, { from: bob })
+    await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
     try {
       await propertyRegistry.approveRequest(tokenId, { from: eve })
     } catch (e) {}
@@ -142,9 +138,8 @@ contract('Property Contract tests', async accounts => {
     const property = await Property.new('A', 'A', { from: owner})
     const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
     const response = await property.createProperty({ from: owner })
-    const blockNumber = response.receipt.blockNumber
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, blockNumber, blockNumber + 2, { from: bob })
+    await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
     await propertyRegistry.approveRequest(tokenId, { from: owner })
     await propertyRegistry.checkIn(tokenId, { from: bob })
     const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
@@ -155,9 +150,8 @@ contract('Property Contract tests', async accounts => {
     const property = await Property.new('A', 'A', { from: owner})
     const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
     const response = await property.createProperty({ from: owner })
-    const blockNumber = response.receipt.blockNumber
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, blockNumber, blockNumber + 2, { from: bob })
+    await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
     await propertyRegistry.approveRequest(tokenId, { from: owner })
     try {
       await propertyRegistry.checkIn(tokenId, { from: eve })
@@ -170,9 +164,8 @@ contract('Property Contract tests', async accounts => {
     const property = await Property.new('A', 'A', { from: owner})
     const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
     const response = await property.createProperty({ from: owner })
-    const blockNumber = response.receipt.blockNumber
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, blockNumber + 5, blockNumber + 8, { from: bob })
+    await propertyRegistry.request(tokenId, now(5, 'days'), now(7, 'days'), { from: bob })
     await propertyRegistry.approveRequest(tokenId, { from: owner })
     try {
       await propertyRegistry.checkIn(tokenId, { from: bob })
@@ -203,9 +196,8 @@ contract('Property Contract tests', async accounts => {
     const property = await Property.new('A', 'A', { from: owner})
     const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
     const response = await property.createProperty({ from: owner })
-    const blockNumber = response.receipt.blockNumber
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, blockNumber, blockNumber + 2, { from: bob })
+    await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
     await propertyRegistry.approveRequest(tokenId, { from: owner })
     await propertyRegistry.checkIn(tokenId, { from: bob })
     await propertyRegistry.checkOut(tokenId, { from: bob })
@@ -221,14 +213,13 @@ contract('Property Contract tests', async accounts => {
     const property = await Property.new('A', 'A', { from: owner})
     const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
     const response = await property.createProperty({ from: owner })
-    const blockNumber = response.receipt.blockNumber
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, blockNumber, blockNumber + 2, { from: bob })
+    await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
     await propertyRegistry.approveRequest(tokenId, { from: owner })
     await propertyRegistry.checkIn(tokenId, { from: bob })
     await propertyRegistry.checkOut(tokenId, { from: bob })
-    await propertyRegistry.request(tokenId, blockNumber + 57, blockNumber + 58, { from: alice })
+    await propertyRegistry.request(tokenId, now(3, 'days'), now(5, 'days'), { from: bob })
     const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[2].toString() === String(blockNumber + 57), 'could not make another request')
+    assert(registeredProperty[2].toString() === String(now(3, 'days')), 'could not make another request')
   })
 })

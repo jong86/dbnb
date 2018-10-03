@@ -21,5 +21,5 @@ export function now(multiple = 1, unit) {
       break
   }
 
-  return (Date.now() / 1000) + extraTime
+  return parseInt((Date.now() / 1000) + extraTime)
 }
