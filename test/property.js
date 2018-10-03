@@ -1,5 +1,6 @@
 const Property = artifacts.require('./Property.sol')
 const PropertyRegistry = artifacts.require('./PropertyRegistry.sol')
+import { now } from '../util/time'
 
 // Note: Caught errors are ignored in some negative test cases so function still reaches assert()
 
@@ -86,7 +87,7 @@ contract('Property Contract tests', async accounts => {
     const response = await property.createProperty({ from: owner })
     const blockNumber = response.receipt.blockNumber
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, blockNumber + 1, blockNumber + 3, { from: bob })
+    await propertyRegistry.request(tokenId, now(), blockNumber + 3, { from: bob })
     const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
     assert(registeredProperty[2].toString() === String(blockNumber + 1), 'could not make a request')
   })

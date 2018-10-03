@@ -42,7 +42,7 @@ contract PropertyRegistry {
 
   function checkIn(uint _tokenId) external {
     require(registeredProperties[_tokenId].occupant == msg.sender, "You are not the guest");
-    require(registeredProperties[_tokenId].checkIn <= block.number, "It is not time to check-in yet");
+    require(registeredProperties[_tokenId].checkIn <= now, "It is not time to check-in yet");
     registeredProperties[_tokenId].isCheckedIn = true;
   }
 
