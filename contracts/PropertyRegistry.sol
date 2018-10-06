@@ -18,6 +18,11 @@ contract PropertyRegistry {
     bool isCheckedIn;
   }
 
+  struct Request {
+    uint256 checkIn;
+    uint256 checkOut;
+  }
+
   constructor(address _property, address _propertyToken) public {
     property = ERC721Basic(_property);
     propertyToken = ERC20(_propertyToken);
