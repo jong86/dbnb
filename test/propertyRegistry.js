@@ -1,4 +1,5 @@
 const Property = artifacts.require('./Property.sol')
+const PropertyToken = artifacts.require('./PropertyToken.sol')
 const PropertyRegistry = artifacts.require('./PropertyRegistry.sol')
 import { now } from '../util/time'
 
@@ -10,23 +11,25 @@ contract('PropertyRegistry', accounts => {
 
   it('should allow the owner to register a property', async () => {
     const property = await Property.new('A', 'A', { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, { from: alice })
+    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.registerProperty(tokenId, 123456, { from: owner })
-    const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
+    const registeredProperty = await propertyRegistry.regProps(tokenId)
     assert(registeredProperty[0].toString() === '123456', 'could not register property')
   })
 
   it('should not allow a non-owner to register a property', async () => {
     const property = await Property.new('A', 'A', { from: owner})
-    const propertyRegistry = await PropertyRegistry.new(property.address, { from: alice })
+    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     try {
       await propertyRegistry.registerProperty(tokenId, 123456, { from: alice })
     } catch (e) {}
-    const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
+    const registeredProperty = await propertyRegistry.regProps(tokenId)
     assert(registeredProperty[0].toString() !== '123456', 'could register property')
   })
 
@@ -35,25 +38,29 @@ contract('PropertyRegistry', accounts => {
 
   it('should allow bob to submit a request', async () => {
     const property = await Property.new('A', 'A', { from: owner})
-    const propertyRegistry = await PropertyRegistry.new(property.address, { from: alice })
+    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
-    const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[2].toString() === String(now()), 'could not make a request')
+    const nowTime = now()
+    await propertyRegistry.request(tokenId, nowTime, now(2, 'days'), { from: bob })
+    const request = await propertyRegistry.getRequest(tokenId, bob, { from: owner })
+    assert(request[0].toString() === String(nowTime), 'could not make a request')
   })
 
-  it('should not allow eve to submit request after bob has submitted one', async () => {
+  it('should allow alice to submit request after bob has submitted one', async () => {
     const property = await Property.new('A', 'A', { from: owner})
-    const propertyRegistry = await PropertyRegistry.new(property.address, { from: eve })
+    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
-    try {
-      await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: eve })
-    } catch (e) {}
-    const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[1].toString() === bob, 'eve could make a request')
+    const nowTime = now()
+    await propertyRegistry.request(tokenId, nowTime, now(2, 'days'), { from: bob })
+    await propertyRegistry.request(tokenId, nowTime, now(2, 'days'), { from: alice })
+    const requestBob = await propertyRegistry.getRequest(tokenId, bob, { from: owner })
+    const requestAlice = await propertyRegistry.getRequest(tokenId, alice, { from: owner })
+    assert(requestBob[0].toString() === String(nowTime), 'bob could not make a request')
+    assert(requestAlice[0].toString() === String(nowTime), 'alice could not make a request')
   })
 
 
@@ -61,26 +68,28 @@ contract('PropertyRegistry', accounts => {
 
   it('should allow owner to approve bob\'s request', async () => {
     const property = await Property.new('A', 'A', { from: owner})
-    const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
+    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
-    await propertyRegistry.approveRequest(tokenId, { from: owner })
-    const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[4] === true, 'could not approve')
+    await propertyRegistry.approveRequest(tokenId, bob, { from: owner })
+    const isApproved = await propertyRegistry.checkIfApproved(tokenId, { from: bob })
+    assert(isApproved, 'was not approved')
   })
 
   it('should not let eve approve bob\'s request', async () => {
     const property = await Property.new('A', 'A', { from: owner})
-    const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
+    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
     try {
-      await propertyRegistry.approveRequest(tokenId, { from: eve })
+      await propertyRegistry.approveRequest(tokenId, bob, { from: eve })
     } catch (e) {}
-    const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[4] === false, 'could approve')
+    const isApproved = await propertyRegistry.checkIfApproved(tokenId, { from: bob })
+    assert(!isApproved, 'was approved')
   })
 
 
@@ -88,74 +97,76 @@ contract('PropertyRegistry', accounts => {
 
   it('bob can check-in after owner has approved and the approved time has come', async () => {
     const property = await Property.new('A', 'A', { from: owner})
-    const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
+    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
-    await propertyRegistry.approveRequest(tokenId, { from: owner })
+    await propertyRegistry.approveRequest(tokenId, bob, { from: owner })
     await propertyRegistry.checkIn(tokenId, { from: bob })
-    const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[5] === true, 'could not check-in')
+    const occupant = await propertyRegistry.getOccupant(tokenId, { from: owner })
+    assert(occupant === bob, 'could not check in')
   })
 
   it('eve cannot check into property, even if correct time has come', async () => {
     const property = await Property.new('A', 'A', { from: owner})
-    const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
+    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
-    await propertyRegistry.approveRequest(tokenId, { from: owner })
+    await propertyRegistry.approveRequest(tokenId, bob, { from: owner })
     try {
       await propertyRegistry.checkIn(tokenId, { from: eve })
     } catch (e) {}
-    const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[5] === false, 'could check-in')
+    const occupant = await propertyRegistry.getOccupant(tokenId, { from: owner })
+    assert(occupant !== eve, 'could check in')
   })
 
   it('bob CANNOT check-in after owner has approved but approved time has NOT come', async () => {
     const property = await Property.new('A', 'A', { from: owner})
-    const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
+    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
-    await propertyRegistry.request(tokenId, now(5, 'days'), now(7, 'days'), { from: bob })
-    await propertyRegistry.approveRequest(tokenId, { from: owner })
+    await propertyRegistry.request(tokenId, now(2, 'days'), now(4, 'days'), { from: bob })
+    await propertyRegistry.approveRequest(tokenId, bob, { from: owner })
     try {
       await propertyRegistry.checkIn(tokenId, { from: bob })
     } catch (e) {}
-    const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[5] === false, 'could check-in')
+    const occupant = await propertyRegistry.getOccupant(tokenId, { from: owner })
+    assert(occupant !== bob, 'could check in')
   })
 
   // Checking out
 
   it('bob can check-out', async () => {
     const property = await Property.new('A', 'A', { from: owner})
-    const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
+    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
-    await propertyRegistry.approveRequest(tokenId, { from: owner })
+    await propertyRegistry.approveRequest(tokenId, bob, { from: owner })
     await propertyRegistry.checkIn(tokenId, { from: bob })
     await propertyRegistry.checkOut(tokenId, { from: bob })
-    const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[1] === '0x0000000000000000000000000000000000000000', 'occupant address not deleted')
-    assert(registeredProperty[2].toString() === '0', 'check-in time not deleted')
-    assert(registeredProperty[3].toString() === '0', 'check-out time not deleted')
-    assert(registeredProperty[4] === false, 'isApproved not falsified')
-    assert(registeredProperty[5] === false, 'isCheckedIn not falsified')
+    const occupant = await propertyRegistry.getOccupant(tokenId, { from: owner })
+    assert(occupant !== bob, 'could not check out')
   })
 
-  it('a new request can be submitted after bob has checked out', async () => {
+  it('eve cannot check-out for bob', async () => {
     const property = await Property.new('A', 'A', { from: owner})
-    const propertyRegistry = await PropertyRegistry.new(property.address, { from: owner })
+    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
-    await propertyRegistry.approveRequest(tokenId, { from: owner })
+    await propertyRegistry.approveRequest(tokenId, bob, { from: owner })
     await propertyRegistry.checkIn(tokenId, { from: bob })
-    await propertyRegistry.checkOut(tokenId, { from: bob })
-    await propertyRegistry.request(tokenId, now(3, 'days'), now(5, 'days'), { from: bob })
-    const registeredProperty = await propertyRegistry.registeredProperties(tokenId)
-    assert(registeredProperty[2].toString() === String(now(3, 'days')), 'could not make another request')
+    try {
+      await propertyRegistry.checkOut(tokenId, { from: eve })
+    } catch (e) {}
+    const occupant = await propertyRegistry.getOccupant(tokenId, { from: owner })
+    assert(occupant === bob, 'eve could check out for bob')
   })
 })

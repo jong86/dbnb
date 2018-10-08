@@ -7,20 +7,19 @@ contract PropertyRegistry {
   ERC721Basic property;
   ERC20 propertyToken;
 
-  mapping (uint => Stay) public stays;
+  mapping (uint => RegProp) public regProps;
 
-  struct Stay {
+  struct RegProp {
     uint price;
-    address guest;
-    uint checkIn;
-    uint checkOut;
-    bool isApproved;
-    bool isCheckedIn;
+    address[] requested;
+    mapping(address => Request) requests;
+    mapping(address => bool) isApproved;
+    address occupant;
   }
 
   struct Request {
-    uint256 checkIn;
-    uint256 checkOut;
+    uint checkIn;
+    uint checkOut;
   }
 
   constructor(address _property, address _propertyToken) public {
@@ -28,44 +27,63 @@ contract PropertyRegistry {
     propertyToken = ERC20(_propertyToken);
   }
 
+
+  // Modifiers
+
   modifier onlyOwner(uint _tokenId) {
     require(property.ownerOf(_tokenId) == msg.sender, "You must be the owner");
     _;
   }
 
+
+  // Business functions
+
   function registerProperty(uint _tokenId, uint _price) external onlyOwner(_tokenId) {
-    stays[_tokenId] = Stay(_price, address(0), 0, 0, false, false);
+    regProps[_tokenId] = RegProp(_price, new address[](0), address(0));
   }
 
   function request(uint _tokenId, uint _checkIn, uint _checkOut) external {
-    require(stays[_tokenId].guest == address(0), "A request is already pending");
-    require(now < _checkIn, "Check-in time must be in the future");
+    require(now <= _checkIn, "Check-in time must be in the future");
     require(_checkIn < _checkOut, "Check-out time must be after check-in time");
-    stays[_tokenId].checkIn = _checkIn;
-    stays[_tokenId].checkOut = _checkOut;
-    stays[_tokenId].guest = msg.sender;
+    regProps[_tokenId].requested.push(msg.sender);
+    regProps[_tokenId].requests[msg.sender] = Request(_checkIn, _checkOut);
   }
 
-  function approveRequest(uint _tokenId) external onlyOwner(_tokenId) {
-    stays[_tokenId].isApproved = true;
+  function approveRequest(uint _tokenId, address _address) external onlyOwner(_tokenId) {
+    regProps[_tokenId].isApproved[_address] = true;
   }
 
   function checkIn(uint _tokenId) external {
-    require(stays[_tokenId].guest == msg.sender, "You are not the guest");
-    require(stays[_tokenId].isApproved == true, "You are not approved to stay here");
-    require(stays[_tokenId].checkIn <= now, "It is not time to check-in yet");
-    require(propertyToken.transferFrom(msg.sender, this, stays[_tokenId].price));
-    stays[_tokenId].isCheckedIn = true;
+    require(regProps[_tokenId].isApproved[msg.sender], "You are not approved");
+    require(regProps[_tokenId].requests[msg.sender].checkIn <= now, "It is not time to check-in yet");
+    require(propertyToken.transferFrom(msg.sender, this, regProps[_tokenId].price), "Could not transfer funds");
+    regProps[_tokenId].occupant = msg.sender;
   }
 
   function checkOut(uint _tokenId) external {
-    require(stays[_tokenId].guest == msg.sender, "You are not the guest");
-    require(now <= stays[_tokenId].checkOut, "Time must be before or equal to agreed check-out time");
-    require(propertyToken.transfer(property.ownerOf(_tokenId), stays[_tokenId].price), "Could not transfer funds");
-    stays[_tokenId].guest = address(0);
-    stays[_tokenId].checkIn = 0;
-    stays[_tokenId].checkOut = 0;
-    stays[_tokenId].isApproved = false;
-    stays[_tokenId].isCheckedIn = false;
+    require(regProps[_tokenId].occupant == msg.sender, "You are not the occupant");
+    require(now <= regProps[_tokenId].requests[msg.sender].checkOut, "Time must be before or equal to agreed check-out time");
+    require(propertyToken.transfer(property.ownerOf(_tokenId), regProps[_tokenId].price), "Could not transfer funds");
+    regProps[_tokenId].occupant = address(0);
+    regProps[_tokenId].isApproved[msg.sender] = false;
+  }
+
+
+  // External view functions
+
+  function viewRequested(uint _tokenId) external view onlyOwner(_tokenId) returns (address[]) {
+    return regProps[_tokenId].requested;
+  }
+
+  function getRequest(uint _tokenId, address _address) external view onlyOwner(_tokenId) returns (uint, uint) {
+    return (regProps[_tokenId].requests[_address].checkIn, regProps[_tokenId].requests[_address].checkOut);
+  }
+
+  function checkIfApproved(uint _tokenId) external view returns (bool) {
+    return regProps[_tokenId].isApproved[msg.sender];
+  }
+
+  function getOccupant(uint _tokenId) external view onlyOwner(_tokenId) returns (address) {
+    return regProps[_tokenId].occupant;
   }
 }
