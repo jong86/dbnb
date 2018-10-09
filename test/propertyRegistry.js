@@ -138,7 +138,7 @@ contract('PropertyRegistry', accounts => {
     assert(occupant !== bob, 'could check in')
   })
 
-  
+
   // Checking out
 
   it('bob can check-out', async () => {
