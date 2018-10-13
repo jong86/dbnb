@@ -2,11 +2,15 @@
   <div id="app">
     <Header />
     <div class="create-property" @click="stuff">create property</div>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 import Header from './components/Header.vue'
+
+
+// start contract listening stuff:
 import Web3 from 'web3'
 import truffleContract from 'truffle-contract'
 import jsonProperty from '../../build/contracts/Property.json'
@@ -41,10 +45,12 @@ async function initListening() {
 
 initListening()
 
-
 const { accounts } = web3.eth;
 const alice = accounts[0];
 const bob = accounts[1];
+// end contract listening stuff
+
+
 
 
 
