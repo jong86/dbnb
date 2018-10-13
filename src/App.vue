@@ -14,6 +14,7 @@ import store from './store.js'
 import Web3 from 'web3'
 import truffleContract from 'truffle-contract'
 import jsonProperty from '../build/contracts/Property.json'
+import jsonPropertyRegistry from '../build/contracts/PropertyRegistry.json'
 
 let web3Provider
 if (typeof web3 !== "undefined") {
@@ -31,7 +32,7 @@ async function getContract(json, web3 = window.web3) {
 }
 
 
-async function initPropertyListening() {
+async function initProperty() {
   store.commit('setPropertyContract', await getContract(jsonProperty))
   const propertyContract = store.state.propertyContract
 
@@ -44,7 +45,21 @@ async function initPropertyListening() {
   })
 }
 
-initPropertyListening()
+async function initPropertyRegistry() {
+  store.commit('setPropertyRegistryContract', await getContract(jsonPropertyRegistry))
+  const propertyRegistryContract = store.state.propertyRegistryContract
+
+  const event = propertyRegistryContract.allEvents({ fromBlock: 0, toBlock: 'latest' });
+  event.watch((err, res) => {
+    if (err)
+      console.log('watch error', err)
+    else
+      console.log('got an event', res)
+  })
+}
+
+initProperty()
+initPropertyRegistry()
 
 export default {
   name: 'app',

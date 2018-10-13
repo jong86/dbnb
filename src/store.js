@@ -16,12 +16,14 @@ const vuexLocalStorage = new VuexPersist({
 const store = new Vuex.Store({
   state: {
     x: 57,
-    // propertyContract: {},
   },
   mutations: {
     setPropertyContract(state, instance) {
       state.propertyContract = instance
-    }
+    },
+    setPropertyRegistryContract(state, instance) {
+      state.propertyRegistryContract = instance
+    },
   },
   plugins: [vuexLocalStorage.plugin],
 })
