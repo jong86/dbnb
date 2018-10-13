@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Header />
-    <div class="create-property" @click="stuff">create property</div>
+    <!-- <div class="create-property" @click="stuff">create property</div> -->
     <router-view></router-view>
   </div>
 </template>

@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import FindARental from './components/FindARental.vue'
-import CreateProperty from './components/CreateProperty.vue'
-import ViewMyProperties from './components/ViewMyProperties.vue'
-import ViewMyRequests from './components/ViewMyRequests.vue'
+import FindARental from './components/sections/FindARental.vue'
+import CreateProperty from './components/sections/CreateProperty.vue'
+import ViewMyProperties from './components/sections/ViewMyProperties.vue'
+import ViewMyRequests from './components/sections/ViewMyRequests.vue'
 
 Vue.use(Router)
 

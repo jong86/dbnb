@@ -4,20 +4,31 @@
       <h3>dBNB</h3>
     </div>
     <div class="links">
-      <div>Create Property</div>
-      <div>View My Properties</div>
-      <div>Find Rental</div>
-      <div>View My Requests</div>
+      <cool-button
+        v-for="link of links"
+        :key="link.path"
+        :path="link.path"
+      >{{link.label}}</cool-button>
     </div>
   </div>
 </template>
 
 <script>
+import CoolButton from './reusables/CoolButton.vue'
+
 export default {
   name: 'Header',
-  props: {
-    msg: String
-  }
+  components: {
+    CoolButton,
+  },
+  data: () => ({
+    links: [
+      { label: 'Find Rental', path: '/' },
+      { label: 'Create Property', path: '/create' },
+      { label: 'View My Properties', path: '/my-properties' },
+      { label: 'View My Requests', path: '/my-requests' },
+    ],
+  }),
 }
 </script>
 
