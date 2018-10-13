@@ -18,6 +18,7 @@
 <script>
 import SiteSection from '../reusables/SiteSection.vue'
 import NavButton from '../reusables/NavButton.vue'
+import { propertyContract } from '../../contracts.js'
 
 export default {
   components: {
@@ -34,7 +35,7 @@ export default {
       e.preventDefault()
 
       try {
-        const tx = await window.propertyContract.createProperty({
+        const tx = await propertyContract.createProperty({
           from: window.web3.eth.accounts[0],
           gas: 200000,
         });
