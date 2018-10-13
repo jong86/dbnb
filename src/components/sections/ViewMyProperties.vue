@@ -67,8 +67,6 @@ export default {
             })
           })
 
-          console.log('properties', properties);
-
           this.properties = properties
 
         } catch(e) {
