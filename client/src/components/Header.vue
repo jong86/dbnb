@@ -4,22 +4,22 @@
       <h3>dBNB</h3>
     </div>
     <div class="links">
-      <cool-button
+      <nav-button
         v-for="link of links"
         :key="link.path"
         :path="link.path"
-      >{{link.label}}</cool-button>
+      >{{link.label}}</nav-button>
     </div>
   </div>
 </template>
 
 <script>
-import CoolButton from './reusables/CoolButton.vue'
+import NavButton from './reusables/NavButton.vue'
 
 export default {
   name: 'Header',
   components: {
-    CoolButton,
+    NavButton,
   },
   data: () => ({
     links: [
@@ -46,7 +46,7 @@ export default {
   }
 
   h3 {
-
+    margin: 4px;
   }
 }
 

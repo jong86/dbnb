@@ -9,7 +9,6 @@
 <script>
 import Header from './components/Header.vue'
 
-
 // start contract listening stuff:
 import Web3 from 'web3'
 import truffleContract from 'truffle-contract'
@@ -23,18 +22,21 @@ if (typeof web3 !== "undefined") {
 }
 window.web3 = new Web3(web3Provider)
 
+// Set default account from metamask
+window.web3.eth.defaultAccount = window.web3.eth.accounts[0]
+
 async function getContract(json, web3 = window.web3) {
-  const contract = truffleContract(json);
-  contract.setProvider(web3.currentProvider);
-  return contract.deployed();
+  const contract = truffleContract(json)
+  console.log('contract', contract);
+  contract.web3.eth.defaultAccount = window.web3.eth.accounts[0]
+  contract.setProvider(web3.currentProvider)
+  return contract.deployed()
 }
 
-let propertyContract
-
 async function initListening() {
-  propertyContract = await getContract(jsonProperty);
+  window.propertyContract = await getContract(jsonProperty);
 
-  const event = propertyContract.allEvents({ fromBlock: 0, toBlock: 'latest' });
+  const event = window.propertyContract.allEvents({ fromBlock: 0, toBlock: 'latest' });
   event.watch((err, res) => {
     if (err)
       console.log('watch error', err)
@@ -44,11 +46,6 @@ async function initListening() {
 }
 
 initListening()
-
-const { accounts } = web3.eth;
-const alice = accounts[0];
-const bob = accounts[1];
-// end contract listening stuff
 
 
 
@@ -60,19 +57,7 @@ export default {
     Header
   },
   methods: {
-    stuff: async () => {
-      try {
-        const tx = await propertyContract.createProperty({
-          from: alice,
-          gas: 250000
-        });
-        console.log(tx);
-        console.log('Property Created for Alice');
-      } catch(e) {
-        console.log(e);
-        alert('Error creating property', e)
-      }
-    }
+
   }
 }
 </script>

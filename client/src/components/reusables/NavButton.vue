@@ -1,6 +1,6 @@
 <template>
   <div
-    class="cool-button"
+    class="nav-button"
     @click="doAction"
   >
     <slot></slot>
@@ -13,15 +13,19 @@ export default {
     path: String,
   },
   methods: {
-    doAction: function() {
-      this.$router.push(this.$props.path)
+    doAction() {
+      const { path, fn } = this.$props
+
+      if (path) {
+        this.$router.push(path)
+      }
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-.cool-button {
+.nav-button {
   width: fit-content;
   background-color: whitesmoke;
   color: #000;
@@ -33,5 +37,6 @@ export default {
   margin: 4px;
   padding: 2px;
   cursor: pointer;
+  font-size: 14px;
 }
 </style>
