@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Header />
+    <div class="create-property" @click="stuff">create property</div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Header from './components/Header.vue'
 import Web3 from 'web3'
 import truffleContract from 'truffle-contract'
 import jsonProperty from '../../build/contracts/Property.json'
@@ -25,8 +25,10 @@ async function getContract(json, web3 = window.web3) {
   return contract.deployed();
 }
 
+let propertyContract
+
 async function initListening() {
-  const propertyContract = await getContract(jsonProperty);
+  propertyContract = await getContract(jsonProperty);
 
   const event = propertyContract.allEvents({ fromBlock: 0, toBlock: 'latest' });
   event.watch((err, res) => {
@@ -40,22 +42,47 @@ async function initListening() {
 initListening()
 
 
+const { accounts } = web3.eth;
+const alice = accounts[0];
+const bob = accounts[1];
+
+
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    Header
+  },
+  methods: {
+    stuff: async () => {
+      try {
+        const tx = await propertyContract.createProperty({
+          from: alice,
+          gas: 250000
+        });
+        console.log(tx);
+        console.log('Property Created for Alice');
+      } catch(e) {
+        console.log(e);
+        alert('Error creating property', e)
+      }
+    }
   }
 }
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  margin: 0;
+  padding: 0;
+}
+.create-property {
+  background-color: salmon;
+  height: 50px;
+  width: 120px;
 }
 </style>
