@@ -22,4 +22,8 @@ contract Property is ERC721Token {
   function getURI(uint256 _tokenId) external view returns (string) {
     return tokenURIs[_tokenId];
   }
+
+  function getProperties() external view returns (uint[]) {
+    return ownedTokens[msg.sender];
+  }
 }

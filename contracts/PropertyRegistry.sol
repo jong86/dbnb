@@ -99,15 +99,7 @@ contract PropertyRegistry {
     return regProps[_tokenId].occupant;
   }
 
-  function getProperties() external view returns (uint[]) {
-    return ownedTokens[msg.sender];
-  }
-
-  function getStayData(uint _tokenId) external view returns(uint, address, address[]) {
-    return (
-      regProps[_tokenId].price,
-      regProps[_tokenId].requested,
-      regProps[_tokenId].occupant
-    );
+  function getStayData(uint _tokenId) external view returns(uint, address[], address) {
+    return (regProps[_tokenId].price, regProps[_tokenId].requested, regProps[_tokenId].occupant);
   }
 }
