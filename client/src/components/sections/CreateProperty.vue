@@ -32,11 +32,12 @@ export default {
   methods: {
     async createProperty(e) {
       e.preventDefault()
-      console.log('web3.eth.accounts', web3.eth.accounts);
-      console.log(this.$data.uri)
 
       try {
-        const tx = await window.propertyContract.createProperty();
+        const tx = await window.propertyContract.createProperty({
+          from: window.web3.eth.accounts[0],
+          gas: 200000,
+        });
         console.log(tx);
         console.log('Property Created for Alice');
       } catch(e) {

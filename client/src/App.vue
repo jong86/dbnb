@@ -23,12 +23,12 @@ if (typeof web3 !== "undefined") {
 window.web3 = new Web3(web3Provider)
 
 // Set default account from metamask
-window.web3.eth.defaultAccount = window.web3.eth.accounts[0]
+// window.web3.eth.defaultAccount = window.web3.eth.accounts[0]
 
 async function getContract(json, web3 = window.web3) {
   const contract = truffleContract(json)
   console.log('contract', contract);
-  contract.web3.eth.defaultAccount = window.web3.eth.accounts[0]
+  // contract.web3.eth.defaultAccount = window.web3.eth.accounts[0]
   contract.setProvider(web3.currentProvider)
   return contract.deployed()
 }
@@ -46,10 +46,6 @@ async function initListening() {
 }
 
 initListening()
-
-
-
-
 
 export default {
   name: 'app',
