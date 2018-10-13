@@ -85,7 +85,10 @@ contract PropertyRegistry {
   }
 
   function getRequest(uint _tokenId, address _address) external view onlyOwner(_tokenId) returns (uint, uint) {
-    return (regProps[_tokenId].requests[_address].checkIn, regProps[_tokenId].requests[_address].checkOut);
+    return (
+      regProps[_tokenId].requests[_address].checkIn,
+      regProps[_tokenId].requests[_address].checkOut
+    );
   }
 
   function checkIfApproved(uint _tokenId) external view returns (bool) {
@@ -94,5 +97,17 @@ contract PropertyRegistry {
 
   function getOccupant(uint _tokenId) external view onlyOwner(_tokenId) returns (address) {
     return regProps[_tokenId].occupant;
+  }
+
+  function getProperties() external view returns (uint[]) {
+    return ownedTokens[msg.sender];
+  }
+
+  function getStayData(uint _tokenId) external view returns(uint, address, address[]) {
+    return (
+      regProps[_tokenId].price,
+      regProps[_tokenId].requested,
+      regProps[_tokenId].occupant
+    );
   }
 }
