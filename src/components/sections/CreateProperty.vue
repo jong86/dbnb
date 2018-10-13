@@ -18,7 +18,7 @@
 <script>
 import SiteSection from '../reusables/SiteSection.vue'
 import NavButton from '../reusables/NavButton.vue'
-import { propertyContract } from '../../contracts.js'
+import store from '../../store.js'
 
 export default {
   components: {
@@ -33,6 +33,7 @@ export default {
   methods: {
     async createProperty(e) {
       e.preventDefault()
+      const propertyContract = store.state.propertyContract
 
       try {
         const tx = await propertyContract.createProperty({

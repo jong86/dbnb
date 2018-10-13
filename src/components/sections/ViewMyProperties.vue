@@ -3,16 +3,16 @@
     <div>
       View my properties
     </div>
-    <div v-for="property in properties" :key="property.toString()">
-      {{property.toString()}}
+    <div v-for="property in properties" :key="property.id">
+      Id: {{property.id}}
+      URI: {{property.uri}}
     </div>
   </site-section>
 </template>
 
 <script>
 import SiteSection from '../reusables/SiteSection.vue'
-import { getContract } from '../../contracts.js'
-import jsonProperty from '../../../../build/contracts/Property.json'
+import store from '../../store.js'
 
 export default {
   components: {
@@ -28,17 +28,38 @@ export default {
   },
   methods: {
     async getProperties() {
-      const propertyContract = await getContract(jsonProperty);
-      console.log('propertyContract', propertyContract);
+      if (store.state.propertyContract) {
+        const propertyContract = store.state.propertyContract
 
-      try {
-        const properties = await propertyContract.getProperties({
-          from: window.web3.eth.accounts[0],
-          gas: 200000,
-        });
-        console.log('properties', properties);
-      } catch(e) {
-        console.log("e", e);
+        try {
+          const propertyIds = await propertyContract.getProperties({
+            from: window.web3.eth.accounts[0],
+            gas: 200000,
+          })
+
+          const properties = []
+
+          propertyIds.forEach(async propertyId => {
+            try {
+              var uri = await propertyContract.getURI(propertyId, {
+                from: window.web3.eth.accounts[0],
+                gas: 200000,
+              })
+            } catch (e) {
+              console.log('e', e);
+            }
+
+            properties.push({
+              id: propertyId.toString(),
+              uri: uri,
+            })
+          })
+
+          this.properties = properties
+
+        } catch(e) {
+          console.log("e", e);
+        }
       }
     }
   }
