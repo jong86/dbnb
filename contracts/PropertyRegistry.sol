@@ -28,6 +28,15 @@ contract PropertyRegistry {
   }
 
 
+  // Events
+
+  event Registered(uint indexed _tokenId);
+  event Approved(uint indexed _tokenId);
+  event Requested(uint indexed _tokenId);
+  event CheckIn(uint indexed _tokenId);
+  event CheckOut(uint indexed _tokenId);
+
+
   // Modifiers
 
   modifier onlyOwner(uint _tokenId) {
