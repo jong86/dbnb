@@ -11,11 +11,12 @@ const vuexLocalStorage = new VuexPersist({
   // reducer: state => state,
   // Function that passes a mutation and lets you decide if it should update the state in localStorage.
   // filter: mutation => (true)
+  supportCircular: true,
 })
 
 const store = new Vuex.Store({
   state: {
-    x: 57,
+    isLoading: false,
   },
   mutations: {
     setPropertyContract(state, instance) {

@@ -1,6 +1,11 @@
 <template>
   <div id="app">
     <Header />
+    <atom-spinner
+      :animation-duration="1000"
+      :size="60"
+      :color="'#ff1d5e'"
+     />
     <router-view></router-view>
   </div>
 </template>
@@ -8,6 +13,9 @@
 <script>
 import Header from './components/Header.vue'
 import store from './store.js'
+
+import {AtomSpinner} from 'epic-spinners'
+
 import Web3 from 'web3'
 import truffleContract from 'truffle-contract'
 import jsonProperty from '../build/contracts/Property.json'
@@ -16,7 +24,8 @@ import jsonPropertyRegistry from '../build/contracts/PropertyRegistry.json'
 export default {
   name: 'app',
   components: {
-    Header
+    Header,
+    AtomSpinner,
   },
   methods: {
 
@@ -40,7 +49,8 @@ export default {
 
 
     async function initProperty() {
-      store.commit('setPropertyContract', await getContract(jsonProperty))
+      const instance = await getContract(jsonProperty)
+      store.commit('setPropertyContract', instance)
       const propertyContract = store.state.propertyContract
 
       const event = propertyContract.allEvents({ fromBlock: 0, toBlock: 'latest' });
@@ -66,7 +76,7 @@ export default {
     }
 
     initProperty()
-    initPropertyRegistry()
+    // initPropertyRegistry()
   },
 }
 </script>

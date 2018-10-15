@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     async getProperties() {
-      if (store.state.propertyContract) {
+      if (store.state.propertyContract && store.state.propertyRegistryContract) {
         const propertyContract = store.state.propertyContract
         const propertyRegistryContract = store.state.propertyRegistryContract
 
@@ -72,6 +72,8 @@ export default {
         } catch(e) {
           console.log("e", e);
         }
+      } else {
+        setTimeout(this.getProperties, 50)
       }
     }
   }
