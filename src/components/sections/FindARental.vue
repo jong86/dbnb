@@ -13,6 +13,7 @@
 
 <script>
 import SiteSection from '../reusables/SiteSection.vue'
+import retryInvoke from '../../../util/retryInvoke'
 import { now } from '../../../util/time.js'
 
 export default {
@@ -25,45 +26,37 @@ export default {
     }
   },
   mounted() {
-    this.getRentals()
+    retryInvoke(this.getRentals)
   },
+
   methods: {
     async getRentals() {
+      this.$store.commit('startLoading')
+
       const propertyContract = this.$store.state.propertyContract
-      propertyContract.totalSupply((err, res) => {
-        if (err)
-          console.log('watch error', err)
-        else
-          console.log('got result', res)
-      })
+      const totalSupply = await propertyContract.totalSupply()
 
-      // try {
-      //   const rentals = []
+      try {
+        const rentals = []
+        for (let i = 0; i < totalSupply; i++) {
+          const uri = await propertyContract.getURI(i, {
+            from: window.web3.eth.accounts[0],
+            gas: 200000,
+          })
 
-      //   for (let i = 0; i < totalSupply; i++) {
-      //     const uri = await propertyContract.getURI(i, {
-      //       from: window.web3.eth.accounts[0],
-      //       gas: 200000,
-      //     },  (err, res) => {
-      //       if (err)
-      //         console.log('watch error', err)
-      //       else
-      //         console.log('got an event', res)
-      //     })
+          rentals.push({
+            id: i,
+            uri: uri,
+          })
+        }
 
-      //     rentals.push({
-      //       id: i,
-      //       uri: uri,
-      //     })
-      //   }
+        this.rentals = rentals
 
-      //   this.rentals = rentals
-      //   this.$store.commit('stopLoading')
+      } catch (e) {
+        console.log(e)
+      }
 
-      // } catch (e) {
-      //   console.error(e)
-      // }
-
+      this.$store.commit('stopLoading')
     },
 
     async request(id) {
@@ -75,7 +68,7 @@ export default {
           gas: 200000,
         })
       } catch (e) {
-        console.error(e)
+        console.log(e)
       }
     },
   }

@@ -11,7 +11,7 @@
         color="#0a0"
       />
     </div>
-    <router-view v-else />
+    <router-view />
   </div>
 </template>
 
@@ -32,7 +32,8 @@ export default {
     SelfBuildingSquareSpinner,
   },
   computed: {
-    isLoading() {
+    isLoading: function() {
+      console.log('this.$store.state.isLoading', this.$store.state.isLoading);
       return this.$store.state.isLoading
     }
   },
@@ -55,36 +56,47 @@ export default {
     },
 
     async initProperty() {
-      const instance = await this.getContract(jsonProperty)
-      this.$store.commit('setPropertyContract', instance)
-      const propertyContract = this.$store.state.propertyContract
+      return new Promise(async (resolve, reject) => {
+        const instance = await this.getContract(jsonProperty)
+        this.$store.commit('setPropertyContract', instance)
+        const propertyContract = this.$store.state.propertyContract
 
-      propertyContract.allEvents({ fromBlock: 0, toBlock: 'latest' }, (err, res) => {
-        if (err)
-          console.log('watch error', err)
-        else
-          console.log('got an event', res)
-      });
+        const event = propertyContract.allEvents({ fromBlock: 0, toBlock: 'latest' })
+        event.watch((err, res) => {
+          if (err)
+            console.log('watch error', err)
+          else
+            console.log('got an event', res)
+        })
+
+        resolve()
+      })
     },
 
     async initPropertyRegistry() {
-      const instance = await this.getContract(jsonPropertyRegistry)
-      this.$store.commit('setPropertyRegistryContract', instance)
-      const propertyRegistryContract = this.$store.state.propertyRegistryContract
+      return new Promise(async (resolve, reject) => {
+        const instance = await this.getContract(jsonPropertyRegistry)
+        this.$store.commit('setPropertyRegistryContract', instance)
+        const propertyRegistryContract = this.$store.state.propertyRegistryContract
 
-      propertyRegistryContract.allEvents({ fromBlock: 0, toBlock: 'latest' }, (err, res) => {
-        if (err)
-          console.log('watch error', err)
-        else
-          console.log('got an event', res)
-      });
+        const event = propertyRegistryContract.allEvents({ fromBlock: 0, toBlock: 'latest' })
+        event.watch((err, res) => {
+          if (err)
+            console.log('watch error', err)
+          else
+            console.log('got an event', res)
+        })
+
+        resolve()
+      })
     },
   },
 
-  mounted() {
+  async mounted() {
     this.initWeb3()
-    this.initProperty()
-    this.initPropertyRegistry()
+    await this.initProperty()
+    await this.initPropertyRegistry()
+    this.$store.commit('isInitialized')
   },
 }
 </script>
