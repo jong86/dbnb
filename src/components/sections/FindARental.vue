@@ -13,7 +13,6 @@
 
 <script>
 import SiteSection from '../reusables/SiteSection.vue'
-import store from '../../store.js'
 import { now } from '../../../util/time.js'
 
 export default {
@@ -30,31 +29,45 @@ export default {
   },
   methods: {
     async getRentals() {
-      const propertyContract = store.state.propertyContract
-      const totalSupply = await propertyContract.totalSupply()
+      const propertyContract = this.$store.state.propertyContract
+      propertyContract.totalSupply((err, res) => {
+        if (err)
+          console.log('watch error', err)
+        else
+          console.log('got result', res)
+      })
 
-      try {
-        const rentals = []
-        for (let i = 0; i < totalSupply; i++) {
-          const uri = await propertyContract.getURI(i, {
-            from: window.web3.eth.accounts[0],
-            gas: 200000,
-          })
-          rentals.push({
-            id: i,
-            uri: uri,
-          })
-        }
+      // try {
+      //   const rentals = []
 
-        this.rentals = rentals
+      //   for (let i = 0; i < totalSupply; i++) {
+      //     const uri = await propertyContract.getURI(i, {
+      //       from: window.web3.eth.accounts[0],
+      //       gas: 200000,
+      //     },  (err, res) => {
+      //       if (err)
+      //         console.log('watch error', err)
+      //       else
+      //         console.log('got an event', res)
+      //     })
 
-      } catch (e) {
-        console.error(e)
-      }
+      //     rentals.push({
+      //       id: i,
+      //       uri: uri,
+      //     })
+      //   }
+
+      //   this.rentals = rentals
+      //   this.$store.commit('stopLoading')
+
+      // } catch (e) {
+      //   console.error(e)
+      // }
+
     },
 
     async request(id) {
-      const propertyRegistryContract = store.state.propertyRegistryContract
+      const propertyRegistryContract = this.$store.state.propertyRegistryContract
 
       try {
         await propertyRegistryContract.request(id, now(1, 'day'), now(2, 'days'), {

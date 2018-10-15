@@ -16,7 +16,7 @@ const vuexLocalStorage = new VuexPersist({
 
 const store = new Vuex.Store({
   state: {
-    isLoading: false,
+    isLoading: true,
   },
   mutations: {
     setPropertyContract(state, instance) {
@@ -24,6 +24,13 @@ const store = new Vuex.Store({
     },
     setPropertyRegistryContract(state, instance) {
       state.propertyRegistryContract = instance
+    },
+
+    startLoading() {
+      state.isLoading = true
+    },
+    stopLoading() {
+      state.isLoading = false
     },
   },
   plugins: [vuexLocalStorage.plugin],

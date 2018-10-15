@@ -1,20 +1,24 @@
 <template>
   <div id="app">
     <Header />
-    <atom-spinner
-      :animation-duration="1000"
-      :size="60"
-      :color="'#ff1d5e'"
-     />
-    <router-view></router-view>
+    <div
+      class="spinner"
+      v-if="isLoading"
+    >
+      <self-building-square-spinner
+        :animation-duration="5000"
+        :size="40"
+        color="#0a0"
+      />
+    </div>
+    <router-view v-else />
   </div>
 </template>
 
 <script>
 import Header from './components/Header.vue'
-import store from './store.js'
 
-import {AtomSpinner} from 'epic-spinners'
+import { SelfBuildingSquareSpinner } from 'epic-spinners'
 
 import Web3 from 'web3'
 import truffleContract from 'truffle-contract'
@@ -25,58 +29,62 @@ export default {
   name: 'app',
   components: {
     Header,
-    AtomSpinner,
+    SelfBuildingSquareSpinner,
   },
-  methods: {
-
-  },
-
-  mounted() {
-    let web3Provider
-    if (typeof web3 !== "undefined") {
-      web3Provider = web3.currentProvider
-    } else {
-      web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:9545')
+  computed: {
+    isLoading() {
+      return this.$store.state.isLoading
     }
-    window.web3 = new Web3(web3Provider)
+  },
 
+  methods: {
+    initWeb3() {
+      let web3Provider
+      if (typeof web3 !== "undefined") {
+        web3Provider = web3.currentProvider
+      } else {
+        web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:9545')
+      }
+      window.web3 = new Web3(web3Provider)
+    },
 
-    async function getContract(json, web3 = window.web3) {
+    getContract(json, web3 = window.web3) {
       const contract = truffleContract(json)
       contract.setProvider(web3.currentProvider)
       return contract.deployed()
-    }
+    },
 
+    async initProperty() {
+      const instance = await this.getContract(jsonProperty)
+      this.$store.commit('setPropertyContract', instance)
+      const propertyContract = this.$store.state.propertyContract
 
-    async function initProperty() {
-      const instance = await getContract(jsonProperty)
-      store.commit('setPropertyContract', instance)
-      const propertyContract = store.state.propertyContract
-
-      const event = propertyContract.allEvents({ fromBlock: 0, toBlock: 'latest' });
-      event.watch((err, res) => {
+      propertyContract.allEvents({ fromBlock: 0, toBlock: 'latest' }, (err, res) => {
         if (err)
           console.log('watch error', err)
         else
           console.log('got an event', res)
-      })
-    }
+      });
+    },
 
-    async function initPropertyRegistry() {
-      store.commit('setPropertyRegistryContract', await getContract(jsonPropertyRegistry))
-      const propertyRegistryContract = store.state.propertyRegistryContract
+    async initPropertyRegistry() {
+      const instance = await this.getContract(jsonPropertyRegistry)
+      this.$store.commit('setPropertyRegistryContract', instance)
+      const propertyRegistryContract = this.$store.state.propertyRegistryContract
 
-      const event = propertyRegistryContract.allEvents({ fromBlock: 0, toBlock: 'latest' });
-      event.watch((err, res) => {
+      propertyRegistryContract.allEvents({ fromBlock: 0, toBlock: 'latest' }, (err, res) => {
         if (err)
           console.log('watch error', err)
         else
           console.log('got an event', res)
-      })
-    }
+      });
+    },
+  },
 
-    initProperty()
-    // initPropertyRegistry()
+  mounted() {
+    this.initWeb3()
+    this.initProperty()
+    this.initPropertyRegistry()
   },
 }
 </script>
@@ -89,5 +97,14 @@ export default {
   text-align: center;
   margin: 0;
   padding: 0;
+}
+
+.spinner {
+  width: fill-available;
+  height: fill;
+  margin: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
