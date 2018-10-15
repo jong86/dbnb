@@ -1,15 +1,15 @@
 <template>
   <site-section>
-    <div>
+    <template slot="title">
       View my requests
-    </div>
+    </template>
   </site-section>
 </template>
 
 <script>
-import SiteSection from '../reusables/SiteSection.vue'
-import store from '../../store.js'
-import { now } from '../../../util/time.js'
+import SiteSection from '@/src/components/reusables/SiteSection.vue'
+import store from '@/src/store.js'
+import { now } from '@/util/time.js'
 
 export default {
   components: {

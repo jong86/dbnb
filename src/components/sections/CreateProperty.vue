@@ -1,8 +1,8 @@
 <template>
   <site-section>
-    <div>
+    <template slot="title">
       Create property
-    </div>
+    </template>
     <form>
       <input
         name="uri"
@@ -16,9 +16,9 @@
 </template>
 
 <script>
-import SiteSection from '../reusables/SiteSection.vue'
-import NavButton from '../reusables/NavButton.vue'
-import store from '../../store.js'
+import SiteSection from '@/src/components/reusables/SiteSection.vue'
+import NavButton from '@/src/components/reusables/NavButton.vue'
+import store from '@/src/store.js'
 
 export default {
   components: {

@@ -1,8 +1,8 @@
 <template>
   <site-section>
-    <div>
+    <template slot="title">
       View my properties
-    </div>
+    </template>
     <div v-for="property in properties" :key="property.id">
       Id: {{property.id}}
       URI: <input v-bind:value="property.uri" />
@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import SiteSection from '../reusables/SiteSection.vue'
-import store from '../../store.js'
+import SiteSection from '@/src/components/reusables/SiteSection.vue'
+import store from '@/src/store.js'
 
 export default {
   components: {

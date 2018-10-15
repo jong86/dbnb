@@ -1,6 +1,7 @@
 <template>
   <div class="site-section">
-    <slot></slot>
+    <h3><slot name="title" /></h3>
+    <slot />
   </div>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
   <site-section>
-    <div>
+    <template slot="title">
       Find a rental
-    </div>
+    </template>
     <div class="rental" v-for="rental in rentals" :key="rental.id">
       Id: {{rental.id}}
       URI: {{rental.uri}}
@@ -12,9 +12,9 @@
 </template>
 
 <script>
-import SiteSection from '../reusables/SiteSection.vue'
+import SiteSection from '@/src/components/reusables/SiteSection.vue'
 import retryInvoke from '@/util/retryInvoke'
-import { now } from '../../../util/time.js'
+import { now } from '@/util/time.js'
 
 export default {
   components: {
@@ -59,6 +59,8 @@ export default {
     },
 
     async request(id) {
+      this.$store.commit('startLoading')
+
       const propertyRegistryContract = this.$store.state.propertyRegistryContract
 
       try {
@@ -69,6 +71,8 @@ export default {
       } catch (e) {
         console.log(e)
       }
+
+      this.$store.commit('stopLoading')
     },
   }
 }
