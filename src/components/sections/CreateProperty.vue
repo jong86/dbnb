@@ -37,13 +37,6 @@ export default {
       const propertyContract = store.state.propertyContract
       const { state } = this.$store
 
-      // console.log('getters.defaultAccount', getters.defaultAccount);
-
-      // let address
-      // await state.web3.eth.getAccounts((err, result) => {
-      //   address = result[0]
-      // })
-
       const address = await getAddress()
 
       try {
