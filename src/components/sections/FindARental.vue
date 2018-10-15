@@ -14,6 +14,7 @@
 <script>
 import SiteSection from '@/src/components/reusables/SiteSection.vue'
 import retryInvoke from '@/util/retryInvoke'
+import getAddress from '@/util/getAddress'
 import { now } from '@/util/time.js'
 
 export default {
@@ -33,12 +34,13 @@ export default {
     async getRentals() {
       const propertyContract = this.$store.state.propertyContract
       const totalSupply = await propertyContract.totalSupply()
+      const address = await getAddress()
 
       try {
         const rentals = []
         for (let i = 0; i < totalSupply; i++) {
           const uri = await propertyContract.getURI(i, {
-            from: window.web3.eth.accounts[0],
+            from: address,
             gas: 200000,
           })
 
@@ -59,12 +61,13 @@ export default {
 
     async request(id) {
       this.$store.commit('startLoading')
+      const address = await getAddress()
 
       const propertyRegistryContract = this.$store.state.propertyRegistryContract
 
       try {
         await propertyRegistryContract.request(id, now(1, 'day'), now(2, 'days'), {
-          from: window.web3.eth.accounts[0],
+          from: address,
           gas: 200000,
         })
       } catch (e) {
