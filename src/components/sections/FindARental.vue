@@ -13,7 +13,7 @@
 
 <script>
 import SiteSection from '../reusables/SiteSection.vue'
-import retryInvoke from '../../../util/retryInvoke'
+import retryInvoke from '@/util/retryInvoke'
 import { now } from '../../../util/time.js'
 
 export default {
