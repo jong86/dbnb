@@ -6,6 +6,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     isLoading: false,
+    loadingMessage: '',
     isInitialized: false,
     web3: {},
     propertyContract: {},
@@ -22,8 +23,10 @@ const store = new Vuex.Store({
       state.propertyRegistryContract = instance
     },
 
-    startLoading(state) {
+    startLoading(state, { message }) {
+      console.log('message', message);
       state.isLoading = true
+      state.loadingMessage = message
     },
     stopLoading(state) {
       state.isLoading = false

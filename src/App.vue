@@ -2,7 +2,7 @@
   <div id="app">
     <Header />
     <div
-      class="spinner"
+      class="loader"
       v-if="isLoading"
     >
       <self-building-square-spinner
@@ -10,6 +10,7 @@
         :size="40"
         color="#0a0"
       />
+      <h3>{{ $store.state.loadingMessage }}</h3>
     </div>
     <router-view v-show="!isLoading" />
   </div>
@@ -112,12 +113,13 @@ export default {
   padding: 0;
 }
 
-.spinner {
+.loader {
   width: fill-available;
   height: fill;
   margin: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 </style>

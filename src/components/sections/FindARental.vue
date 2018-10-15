@@ -27,7 +27,7 @@ export default {
     }
   },
   mounted() {
-    this.$store.commit('startLoading')
+    this.$store.commit('startLoading', { message: 'Finding properties...' })
     retryInvoke(this.getRentals)
   },
   methods: {
@@ -60,7 +60,7 @@ export default {
     },
 
     async request(id) {
-      this.$store.commit('startLoading')
+      this.$store.commit('startLoading', { message: "Waiting for transaction to be signed..." })
       const address = await getAddress()
 
       const propertyRegistryContract = this.$store.state.propertyRegistryContract
