@@ -26,13 +26,12 @@ export default {
     }
   },
   mounted() {
+    this.$store.commit('startLoading')
     retryInvoke(this.getRentals)
   },
 
   methods: {
     async getRentals() {
-      this.$store.commit('startLoading')
-
       const propertyContract = this.$store.state.propertyContract
       const totalSupply = await propertyContract.totalSupply()
 

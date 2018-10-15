@@ -11,7 +11,7 @@
         color="#0a0"
       />
     </div>
-    <router-view />
+    <router-view v-show="!isLoading" />
   </div>
 </template>
 
