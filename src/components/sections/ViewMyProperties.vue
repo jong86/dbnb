@@ -3,9 +3,9 @@
     <template slot="title">
       View my properties
     </template>
-    <div v-for="property in properties" :key="property.id">
+    <div v-for="(property, key) in properties" :key="key">
       Id: {{property.id}}
-      URI: <input v-bind:value="property.uri" />
+      URI: <input v-model="properties[key].uri" /><button @click="setURI(property.id, properties[key].uri)">Save</button>
       Requested: {{property.requested}}
     </div>
   </site-section>
@@ -27,7 +27,7 @@ export default {
     }
   },
   mounted() {
-    this.$store.commit('startLoading')
+    this.$store.commit('startLoading', { message: 'Retrieving your properties...' })
     retryInvoke(this.getProperties)
   },
   methods: {
@@ -75,7 +75,20 @@ export default {
 
       this.properties = properties
       this.$store.commit('stopLoading')
-    }
+    },
+
+    async setURI(propertyId, uri) {
+      const propertyContract = store.state.propertyContract
+      const address = await getAddress()
+
+      console.log('setting uri', uri, 'for', propertyId);
+
+      // try {
+      //   propertyContract.setURI()
+      // } catch (e) {
+
+      // }
+    },
   }
 }
 </script>

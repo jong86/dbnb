@@ -10,7 +10,7 @@
         :size="40"
         color="#0a0"
       />
-      <h3>{{ $store.state.loadingMessage }}</h3>
+      <h4>{{ $store.state.loadingMessage }}</h4>
     </div>
     <router-view v-show="!isLoading" />
   </div>

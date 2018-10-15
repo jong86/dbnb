@@ -4,12 +4,12 @@
       Create property
     </template>
     <form>
-      <input
+      <!-- <input
         name="uri"
         type="text"
         v-model="uri"
         placeholder="Enter URI"
-      >
+      > -->
       <button @click="createProperty">Create</button>
     </form>
   </site-section>
@@ -34,20 +34,24 @@ export default {
   methods: {
     async createProperty(e) {
       e.preventDefault()
+      this.$store.commit('startLoading', { message: 'Creating property...' })
       const propertyContract = store.state.propertyContract
+      const propertyRegistryContract = store.state.propertyRegistryContract
       const { state } = this.$store
 
       const address = await getAddress()
 
+      // Create property
       try {
         const tx = await propertyContract.createProperty({
           from: address,
           gas: 200000,
         });
-        console.log('Property created.', tx);
       } catch(e) {
         console.error(e);
       }
+
+      this.$store.commit('stopLoading')
     },
   }
 }

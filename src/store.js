@@ -24,9 +24,8 @@ const store = new Vuex.Store({
     },
 
     startLoading(state, { message }) {
-      console.log('message', message);
       state.isLoading = true
-      state.loadingMessage = message
+      state.loadingMessage = message || ''
     },
     stopLoading(state) {
       state.isLoading = false
