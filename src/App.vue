@@ -46,7 +46,8 @@ export default {
       } else {
         web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:9545')
       }
-      window.web3 = new Web3(web3Provider)
+
+      this.$store.commit('setWeb3', new Web3(web3Provider))
     },
 
     getContract(json, web3 = window.web3) {

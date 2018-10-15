@@ -29,7 +29,6 @@ export default {
     this.$store.commit('startLoading')
     retryInvoke(this.getRentals)
   },
-
   methods: {
     async getRentals() {
       const propertyContract = this.$store.state.propertyContract
@@ -52,7 +51,7 @@ export default {
         this.rentals = rentals
 
       } catch (e) {
-        console.log(e)
+        console.error(e)
       }
 
       this.$store.commit('stopLoading')
@@ -69,7 +68,7 @@ export default {
           gas: 200000,
         })
       } catch (e) {
-        console.log(e)
+        console.error(e)
       }
 
       this.$store.commit('stopLoading')

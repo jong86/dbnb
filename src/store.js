@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexPersist from 'vuex-persist';
 
 Vue.use(Vuex)
 
@@ -8,12 +7,15 @@ const store = new Vuex.Store({
   state: {
     isLoading: false,
     isInitialized: false,
+    web3: {},
     propertyContract: {},
     propertyRegistryContract: {},
   },
   mutations: {
+    setWeb3(state, web3) {
+      state.web3 = web3
+    },
     setPropertyContract(state, instance) {
-      console.log('setPropertyContract', instance, !!instance);
       state.propertyContract = instance
     },
     setPropertyRegistryContract(state, instance) {

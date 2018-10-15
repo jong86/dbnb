@@ -18,7 +18,8 @@
 <script>
 import SiteSection from '@/src/components/reusables/SiteSection.vue'
 import NavButton from '@/src/components/reusables/NavButton.vue'
-import store from '@/src/store.js'
+import store from '@/src/store'
+import getAddress from '@/util/getAddress'
 
 export default {
   components: {
@@ -34,17 +35,25 @@ export default {
     async createProperty(e) {
       e.preventDefault()
       const propertyContract = store.state.propertyContract
+      const { state } = this.$store
+
+      // console.log('getters.defaultAccount', getters.defaultAccount);
+
+      // let address
+      // await state.web3.eth.getAccounts((err, result) => {
+      //   address = result[0]
+      // })
+
+      const address = await getAddress()
 
       try {
         const tx = await propertyContract.createProperty({
-          from: window.web3.eth.accounts[0],
+          from: address,
           gas: 200000,
         });
-        console.log(tx);
-        console.log('Property Created for Alice');
+        console.log('Property created.', tx);
       } catch(e) {
-        console.log(e);
-        alert('Error creating property', e)
+        console.error(e);
       }
     },
   }
