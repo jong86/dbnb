@@ -4,13 +4,6 @@
       Create property
     </template>
     <form>
-      <!-- <input
-        name="uri"
-        type="text"
-        v-model="uri"
-        placeholder="Enter URI"
-      > -->
-      <button @click="createProperty">Create</button>
     </form>
   </site-section>
 </template>

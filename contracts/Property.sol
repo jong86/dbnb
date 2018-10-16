@@ -6,7 +6,9 @@ contract Property is ERC721Token {
   constructor (string _name, string _symbol) public ERC721Token(_name, _symbol) {
   }
 
-  modifier onlyOwner(uint256 _tokenId) {
+  event Created(uint _tokenId, string _uri);
+
+  modifier onlyOwner(uint _tokenId) {
     require(tokenOwner[_tokenId] == msg.sender, "You must be the token owner");
     _;
   }
@@ -15,14 +17,21 @@ contract Property is ERC721Token {
     _mint(msg.sender, allTokens.length + 1);
   }
 
-  function setURI(uint256 _tokenId, string _uri) external onlyOwner(_tokenId) {
+  function setURI(uint _tokenId, string _uri) external onlyOwner(_tokenId) {
     _setTokenURI(_tokenId, _uri);
+  }
+
+  function createWithURI(string _uri) external {
+    uint _tokenId = allTokens.length + 1;
+    _mint(msg.sender, _tokenId);
+    _setTokenURI(_tokenId, _uri);
+    emit Created(_tokenId, _uri);
   }
 
 
   // View functions
 
-  function getURI(uint256 _tokenId) external view returns (string) {
+  function getURI(uint _tokenId) external view returns (string) {
     return tokenURIs[_tokenId];
   }
 

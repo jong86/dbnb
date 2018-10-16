@@ -6,8 +6,7 @@
 </template>
 
 <script>
-export default {
-}
+export default {}
 </script>
 
 <style scoped lang="scss">
@@ -17,8 +16,10 @@ export default {
   color: #000;
   display: flex;
   flex-direction: column;
+  align-items: center;
   border: 1px solid gainsboro;
   border-radius: 4px;
   margin: 1em;
+  padding-bottom: 16px;
 }
 </style>

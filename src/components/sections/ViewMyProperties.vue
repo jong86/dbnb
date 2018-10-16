@@ -3,6 +3,10 @@
     <template slot="title">
       View my properties
     </template>
+    <button
+      class="create-property"
+      @click="createProperty"
+    >Create new property</button>
     <div v-for="(property, key) in properties" :key="key">
       Id: {{property.id}}
       URI: <input v-model="properties[key].uri" /><button @click="setURI(property.id, properties[key].uri)">Save</button>
@@ -89,10 +93,34 @@ export default {
 
       // }
     },
+
+    async createProperty(e) {
+      e.preventDefault()
+      this.$store.commit('startLoading', { message: 'Waiting for signature...' })
+      const propertyContract = store.state.propertyContract
+      const propertyRegistryContract = store.state.propertyRegistryContract
+      const { state } = this.$store
+
+      const address = await getAddress()
+
+      // Create property
+      try {
+        const tx = await propertyContract.createProperty({
+          from: address,
+          gas: 200000,
+        });
+      } catch(e) {
+        console.error(e);
+      }
+
+      this.$store.commit('stopLoading')
+    },
   }
 }
 </script>
 
 <style scoped lang="scss">
-
+.create-property {
+  width: fit-content;
+}
 </style>

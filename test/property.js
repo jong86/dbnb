@@ -48,4 +48,13 @@ contract('Property Contract tests', accounts => {
     const uriGot = await property.getURI(tokenId)
     assert(uriGot !== 'http://someuri.com', 'could set the url')
   })
+
+  it('should allow alice to create property and set the URI with one transaction', async () => {
+    const property = await Property.new('A', 'A', { from: owner })
+    const response = await property.createWithURI('bla', { from: alice })
+    const tokenId = response.logs[1].args._tokenId.toString()
+    const uri = response.logs[1].args._uri
+    assert(tokenId, 'did not receive a tokenId')
+    assert.equal(uri, 'bla', 'did not set uri')
+  })
 })
