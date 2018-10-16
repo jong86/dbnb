@@ -100,13 +100,16 @@ export default {
     },
 
     async request(id) {
+      const checkIn = prompt('In how many days do you want to check in?')
+      const checkOut = prompt('How many nights do you want to stay?') + checkIn
+
       this.$store.commit('startLoading', { message: "Waiting for signature..." })
       const address = await getAddress()
 
       const propertyRegistryContract = this.$store.state.propertyRegistryContract
 
       try {
-        await propertyRegistryContract.request(id, now(1, 'day'), now(2, 'days'), {
+        await propertyRegistryContract.request(id, now(checkIn, 'days'), now(checkOut, 'days'), {
           from: address,
           gas: 200000,
         })
