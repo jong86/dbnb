@@ -65,10 +65,15 @@ export default {
 
         const event = propertyContract.allEvents({ fromBlock: 0, toBlock: 'latest' })
         event.watch((err, res) => {
-          if (err)
+          if (err) {
             console.log('watch error', err)
-          else
+          }
+          else {
             console.log('got an event', res)
+            if (res.event === 'Created') {
+              this.$store.commit('stopLoading')
+            }
+          }
         })
 
         resolve()
@@ -83,10 +88,12 @@ export default {
 
         const event = propertyRegistryContract.allEvents({ fromBlock: 0, toBlock: 'latest' })
         event.watch((err, res) => {
-          if (err)
+          if (err) {
             console.log('watch error', err)
-          else
+          }
+          else {
             console.log('got an event', res)
+          }
         })
 
         resolve()

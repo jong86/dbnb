@@ -3,11 +3,22 @@
     <template slot="title">
       View my properties
     </template>
-    <button
-      class="create-property"
-      @click="createProperty"
-    >Create new property</button>
-    <div v-for="(property, key) in properties" :key="key">
+    <div
+      class="create-box"
+    >
+      <input
+        v-model="uri"
+        placeholder="Enter URI"
+      />
+      <button
+        class="create-button"
+        @click="createWithURI(uri)"
+      >Create new property</button>
+    </div>
+    <div
+      v-for="(property, key) in properties"
+      :key="key"
+    >
       Id: {{property.id}}
       URI: <input v-model="properties[key].uri" /><button @click="setURI(property.id, properties[key].uri)">Save</button>
       Requested: {{property.requested}}
@@ -27,6 +38,7 @@ export default {
   },
   data() {
     return {
+      uri: '',
       properties: [],
     }
   },
@@ -94,8 +106,7 @@ export default {
       // }
     },
 
-    async createProperty(e) {
-      e.preventDefault()
+    async createWithURI(uri) {
       this.$store.commit('startLoading', { message: 'Waiting for signature...' })
       const propertyContract = store.state.propertyContract
       const propertyRegistryContract = store.state.propertyRegistryContract
@@ -105,7 +116,7 @@ export default {
 
       // Create property
       try {
-        const tx = await propertyContract.createProperty({
+        const tx = await propertyContract.createWithURI(uri, {
           from: address,
           gas: 200000,
         });
@@ -113,7 +124,7 @@ export default {
         console.error(e);
       }
 
-      this.$store.commit('stopLoading')
+      this.$store.commit('startLoading', { message: 'Waiting for block to be mined...' })
     },
   }
 }
@@ -122,5 +133,11 @@ export default {
 <style scoped lang="scss">
 .create-property {
   width: fit-content;
+}
+.create-box {
+  border: 1px solid gainsboro;
+  padding: 16px;
+  border-radius: 4px;
+  margin: 16px;
 }
 </style>

@@ -24,7 +24,6 @@ export default {
   data: () => ({
     links: [
       { label: 'Find Rental', path: '/' },
-      { label: 'Create Property', path: '/create' },
       { label: 'View My Properties', path: '/my-properties' },
       { label: 'View My Requests', path: '/my-requests' },
     ],

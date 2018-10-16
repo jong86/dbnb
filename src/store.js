@@ -11,6 +11,8 @@ const store = new Vuex.Store({
     web3: {},
     propertyContract: {},
     propertyRegistryContract: {},
+
+    myProperties: [],
   },
   mutations: {
     setWeb3(state, web3) {
