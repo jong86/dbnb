@@ -24,6 +24,9 @@ const store = new Vuex.Store({
     setPropertyRegistryContract(state, instance) {
       state.propertyRegistryContract = instance
     },
+    isInitialized(state) {
+      state.isInitialized = true
+    },
 
     startLoading(state, { message }) {
       state.isLoading = true
@@ -33,11 +36,13 @@ const store = new Vuex.Store({
       state.isLoading = false
     },
 
-    isInitialized(state) {
-      state.isInitialized = true
+    setMyProperties(state, myProperties) {
+      state.myProperties = myProperties
     },
+    addMyNewProperty(state, myNewProperty) {
+      state.myProperties.push(myNewProperty)
+    }
   },
-  // plugins: [vuexLocalStorage.plugin],
 })
 
 export default store

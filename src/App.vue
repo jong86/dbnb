@@ -3,7 +3,7 @@
     <Header />
     <div
       class="loader"
-      v-if="isLoading"
+      v-if="$store.state.isLoading"
     >
       <self-building-square-spinner
         :animation-duration="5000"
@@ -12,7 +12,7 @@
       />
       <h4>{{ $store.state.loadingMessage }}</h4>
     </div>
-    <router-view v-show="!isLoading" />
+    <router-view v-show="!$store.state.isLoading" />
   </div>
 </template>
 
@@ -31,12 +31,6 @@ export default {
   components: {
     Header,
     SelfBuildingSquareSpinner,
-  },
-  computed: {
-    isLoading: function() {
-      console.log('this.$store.state.isLoading', this.$store.state.isLoading);
-      return this.$store.state.isLoading
-    }
   },
 
   methods: {
@@ -71,6 +65,7 @@ export default {
           else {
             console.log('got an event', res)
             if (res.event === 'Created') {
+              this.$store.commit('addMyNewProperty', { id: res.args._tokenId.toString(), uri: res.args._uri } )
               this.$store.commit('stopLoading')
             }
           }

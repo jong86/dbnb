@@ -16,11 +16,11 @@
       >Create new property</button>
     </div>
     <div
-      v-for="(property, key) in properties"
+      v-for="(property, key) in $store.state.myProperties"
       :key="key"
     >
       Id: {{property.id}}
-      URI: <input v-model="properties[key].uri" /><button @click="setURI(property.id, properties[key].uri)">Save</button>
+      URI: <input v-model="$store.state.myProperties[key].uri" /><button @click="setURI(property.id, $store.state.myProperties[key].uri)">Save</button>
       Requested: {{property.requested}}
     </div>
   </site-section>
@@ -28,7 +28,6 @@
 
 <script>
 import SiteSection from '@/src/components/reusables/SiteSection.vue'
-import store from '@/src/store.js'
 import getAddress from '@/util/getAddress'
 import retryInvoke from '@/util/retryInvoke'
 
@@ -39,7 +38,6 @@ export default {
   data() {
     return {
       uri: '',
-      properties: [],
     }
   },
   mounted() {
@@ -48,8 +46,8 @@ export default {
   },
   methods: {
     async getProperties() {
-      const propertyContract = store.state.propertyContract
-      const propertyRegistryContract = store.state.propertyRegistryContract
+      const propertyContract = this.$store.state.propertyContract
+      const propertyRegistryContract = this.$store.state.propertyRegistryContract
       const address = await getAddress()
       let propertyIds
       const properties = []
@@ -89,12 +87,13 @@ export default {
         })
       })
 
-      this.properties = properties
+      // this.properties = properties
+      this.$store.commit('setMyProperties', properties)
       this.$store.commit('stopLoading')
     },
 
     async setURI(propertyId, uri) {
-      const propertyContract = store.state.propertyContract
+      const propertyContract = this.$store.state.propertyContract
       const address = await getAddress()
 
       console.log('setting uri', uri, 'for', propertyId);
@@ -108,8 +107,8 @@ export default {
 
     async createWithURI(uri) {
       this.$store.commit('startLoading', { message: 'Waiting for signature...' })
-      const propertyContract = store.state.propertyContract
-      const propertyRegistryContract = store.state.propertyRegistryContract
+      const propertyContract = this.$store.state.propertyContract
+      const propertyRegistryContract = this.$store.state.propertyRegistryContract
       const { state } = this.$store
 
       const address = await getAddress()
