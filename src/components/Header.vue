@@ -23,8 +23,8 @@ export default {
   },
   data: () => ({
     links: [
-      { label: 'Find Rental', path: '/' },
-      { label: 'View My Properties', path: '/my-properties' },
+      { label: 'Find a rental', path: '/' },
+      { label: 'View my properties', path: '/my-properties' },
     ],
   }),
 }
