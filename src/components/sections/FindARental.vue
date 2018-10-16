@@ -95,7 +95,7 @@ export default {
         }
       })
 
-      this.$store.commit('setKeyToValue', { key: 'rentals', value: properties })
+      this.$store.commit('setRentals', properties)
       this.$store.commit('stopLoading')
     },
 

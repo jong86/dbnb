@@ -112,22 +112,8 @@ export default {
         })
       })
 
-      // this.$store.commit('setMyProperties', properties)
-      this.$store.commit('setKeyToValue', { key: 'properties', value: properties })
+      this.$store.commit('setMyProperties', properties)
       this.$store.commit('stopLoading')
-    },
-
-    async setURI(id, uri) {
-      const propertyContract = this.$store.state.propertyContract
-      const address = await getAddress()
-
-      console.log('setting uri', uri, 'for', id);
-
-      // try {
-      //   propertyContract.setURI()
-      // } catch (e) {
-
-      // }
     },
 
     async createWithURI(uri) {
