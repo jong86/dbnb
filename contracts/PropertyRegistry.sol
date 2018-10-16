@@ -7,6 +7,8 @@ contract PropertyRegistry {
   ERC721Basic property;
   ERC20 propertyToken;
 
+  uint[] public allRegProps;
+
   mapping (uint => RegProp) public regProps;
 
   struct RegProp {
