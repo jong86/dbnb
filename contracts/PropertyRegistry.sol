@@ -33,8 +33,8 @@ contract PropertyRegistry {
   // Events
 
   event Registered(uint indexed _tokenId, uint _price);
-  event Approved(uint indexed _tokenId);
   event Requested(uint indexed _tokenId);
+  event Approved(uint indexed _tokenId);
   event CheckIn(uint indexed _tokenId);
   event CheckOut(uint indexed _tokenId);
 
@@ -60,6 +60,7 @@ contract PropertyRegistry {
     require(_checkIn < _checkOut, "Check-out time must be after check-in time");
     regProps[_tokenId].requested.push(msg.sender);
     regProps[_tokenId].requests[msg.sender] = Request(_checkIn, _checkOut);
+    emit Requested(_tokenId);
   }
 
   function approveRequest(uint _tokenId, address _address) external onlyOwner(_tokenId) {
