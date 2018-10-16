@@ -111,7 +111,8 @@ export default {
         })
       })
 
-      this.$store.commit('setMyProperties', properties)
+      // this.$store.commit('setMyProperties', properties)
+      this.$store.commit('setKeyToValue', { key: 'properties', value: properties })
       this.$store.commit('stopLoading')
     },
 

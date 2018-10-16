@@ -51,6 +51,7 @@ contract PropertyRegistry {
 
   function registerProperty(uint _tokenId, uint _price) external onlyOwner(_tokenId) {
     regProps[_tokenId] = RegProp(_price, new address[](0), address(0));
+    allRegProps.push(_tokenId);
     emit Registered(_tokenId, _price);
   }
 

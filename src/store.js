@@ -13,6 +13,7 @@ const store = new Vuex.Store({
     propertyRegistryContract: {},
 
     myProperties: [],
+    rentals: [],
   },
   mutations: {
     setWeb3(state, web3) {
@@ -46,6 +47,10 @@ const store = new Vuex.Store({
       const index = state.myProperties.findIndex(element => element.id === id)
       Vue.set(state.myProperties[index], key, value) // Reactively sets object key
     },
+
+    setKeyToValue(state, { key, value }) {
+      Vue.set(state, key, value)
+    }
   },
 })
 

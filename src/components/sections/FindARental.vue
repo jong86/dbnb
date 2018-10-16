@@ -3,7 +3,7 @@
     <template slot="title">
       Find a rental
     </template>
-    <div class="rental" v-for="rental in rentals" :key="rental.id">
+    <div class="rental" v-for="rental in $store.state.rentals" :key="rental.id">
       Id: {{rental.id}}
       URI: {{rental.uri}}
       <button @click="request(rental.id)">Request</button>
@@ -32,30 +32,56 @@ export default {
   },
   methods: {
     async getRentals() {
+      const propertyContract = this.$store.state.propertyContract
       const propertyRegistryContract = this.$store.state.propertyRegistryContract
-      const totalSupply = await propertyRegistryContract.totalSupply()
       const address = await getAddress()
+      let propertyIds
+      const properties = []
 
       try {
-        const rentals = []
-        for (let i = 0; i < totalSupply; i++) {
-          const uri = await propertyContract.getURI(i, {
-            from: address,
-            gas: 200000,
-          })
-
-          rentals.push({
-            id: i,
-            uri: uri,
-          })
-        }
-
-        this.rentals = rentals
-
+        propertyIds = await propertyRegistryContract.getAllRegProps({
+          from: address,
+          gas: 200000,
+        })
+        console.log('propertyIds', propertyIds);
       } catch (e) {
         console.error(e)
       }
 
+      propertyIds.forEach(async propertyId => {
+        try {
+          var uri = await propertyContract.getURI(propertyId, {
+            from: address,
+            gas: 200000,
+          })
+        } catch (e) {
+          console.error(e);
+        }
+
+        try {
+          const response = await propertyRegistryContract.getRegPropData(propertyId, {
+            from: address,
+            gas: 200000,
+          })
+
+          var price = parseInt(response[0].toString())
+          var requested = response[1]
+          var occupant = response[2] === "0x0000000000000000000000000000000000000000" ? 'Vacant' : response[2]
+
+        } catch (e) {
+          console.error(e);
+        }
+
+        properties.push({
+          id: propertyId.toString(),
+          uri,
+          requested,
+          price,
+          occupant,
+        })
+      })
+
+      this.$store.commit('setKeyToValue', { key: 'rentals', value: properties })
       this.$store.commit('stopLoading')
     },
 
