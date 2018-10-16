@@ -36,7 +36,10 @@
           v-if="!property.price"
           @click="registerProperty(property.id)"
         >Register</button>
-        <span v-else>{{property.price}}</span>
+        <span v-else>Price: {{property.price}}</span>
+      </div>
+      <div class="my-property-col">
+        Occupant: {{property.occupant}}
       </div>
     </div>
   </site-section>
@@ -88,18 +91,25 @@ export default {
         }
 
         try {
-          var requested = await propertyRegistryContract.viewRequested(propertyId, {
+          const response = await propertyRegistryContract.getRegPropData(propertyId, {
             from: address,
             gas: 200000,
           })
+
+          var price = parseInt(response[0].toString())
+          var requested = response[1]
+          var occupant = response[2] === "0x0000000000000000000000000000000000000000" ? 'Vacant' : response[2]
+
         } catch (e) {
           console.error(e);
         }
 
         properties.push({
           id: propertyId.toString(),
-          uri: uri,
-          requested, requested,
+          uri,
+          requested,
+          price,
+          occupant,
         })
       })
 
