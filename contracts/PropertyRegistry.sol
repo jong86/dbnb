@@ -30,7 +30,7 @@ contract PropertyRegistry {
 
   // Events
 
-  event Registered(uint indexed _tokenId);
+  event Registered(uint indexed _tokenId, uint _price);
   event Approved(uint indexed _tokenId);
   event Requested(uint indexed _tokenId);
   event CheckIn(uint indexed _tokenId);
@@ -49,6 +49,7 @@ contract PropertyRegistry {
 
   function registerProperty(uint _tokenId, uint _price) external onlyOwner(_tokenId) {
     regProps[_tokenId] = RegProp(_price, new address[](0), address(0));
+    emit Registered(_tokenId, _price);
   }
 
   function request(uint _tokenId, uint _checkIn, uint _checkOut) external {

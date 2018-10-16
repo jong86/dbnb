@@ -41,7 +41,11 @@ const store = new Vuex.Store({
     },
     addMyNewProperty(state, myNewProperty) {
       state.myProperties.push(myNewProperty)
-    }
+    },
+    editMyProperty(state, { id, key, value }) {
+      const index = state.myProperties.findIndex(element => element.id === id)
+      Vue.set(state.myProperties[index], key, value) // Reactively sets object key
+    },
   },
 })
 

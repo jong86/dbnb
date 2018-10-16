@@ -16,12 +16,28 @@
       >Create new property</button>
     </div>
     <div
+      class="my-property"
       v-for="(property, key) in $store.state.myProperties"
       :key="key"
     >
-      Id: {{property.id}}
-      URI: <input v-model="$store.state.myProperties[key].uri" /><button @click="setURI(property.id, $store.state.myProperties[key].uri)">Save</button>
-      Requested: {{property.requested}}
+      <div class="my-property-col">
+        Id: {{property.id}}
+      </div>
+      <div class="my-property-col">
+        URI:
+        <input v-model="$store.state.myProperties[key].uri" />
+        <button @click="setURI(property.id, $store.state.myProperties[key].uri)">Save</button>
+      </div>
+      <div class="my-property-col">
+        Requested: {{property.requested}}
+      </div>
+      <div class="my-property-col">
+        <button
+          v-if="!property.price"
+          @click="registerProperty(property.id)"
+        >Register</button>
+        <span v-else>{{property.price}}</span>
+      </div>
     </div>
   </site-section>
 </template>
@@ -87,16 +103,15 @@ export default {
         })
       })
 
-      // this.properties = properties
       this.$store.commit('setMyProperties', properties)
       this.$store.commit('stopLoading')
     },
 
-    async setURI(propertyId, uri) {
+    async setURI(id, uri) {
       const propertyContract = this.$store.state.propertyContract
       const address = await getAddress()
 
-      console.log('setting uri', uri, 'for', propertyId);
+      console.log('setting uri', uri, 'for', id);
 
       // try {
       //   propertyContract.setURI()
@@ -109,13 +124,29 @@ export default {
       this.$store.commit('startLoading', { message: 'Waiting for signature...' })
       const propertyContract = this.$store.state.propertyContract
       const propertyRegistryContract = this.$store.state.propertyRegistryContract
-      const { state } = this.$store
-
       const address = await getAddress()
 
-      // Create property
       try {
-        const tx = await propertyContract.createWithURI(uri, {
+        await propertyContract.createWithURI(uri, {
+          from: address,
+          gas: 200000,
+        });
+      } catch(e) {
+        console.error(e);
+      }
+
+      this.$store.commit('startLoading', { message: 'Waiting for block to be mined...' })
+    },
+
+    async registerProperty(id) {
+      const price = prompt("How much to charge per night?")
+
+      this.$store.commit('startLoading', { message: 'Waiting for signature...' })
+      const propertyRegistryContract = this.$store.state.propertyRegistryContract
+      const address = await getAddress()
+
+      try {
+        await propertyRegistryContract.registerProperty(id, price, {
           from: address,
           gas: 200000,
         });
@@ -138,5 +169,18 @@ export default {
   padding: 16px;
   border-radius: 4px;
   margin: 16px;
+}
+
+.my-property {
+  display: flex;
+  align-items: center;
+  border: 1px solid gainsboro;
+  border-radius: 4px;
+  margin: 4px;
+  padding: 4px;
+
+  .my-property-col {
+    padding: 4px;
+  }
 }
 </style>

@@ -64,9 +64,19 @@ export default {
           }
           else {
             console.log('got an event', res)
-            if (res.event === 'Created') {
-              this.$store.commit('addMyNewProperty', { id: res.args._tokenId.toString(), uri: res.args._uri } )
-              this.$store.commit('stopLoading')
+            switch(res.event) {
+              case 'Created': {
+                this.$store.commit('addMyNewProperty', {
+                  id: res.args._tokenId.toString(),
+                  uri: res.args._uri,
+                  requested: [],
+                })
+                this.$store.commit('stopLoading')
+                break
+              }
+              default: {
+                this.$store.commit('stopLoading')
+              }
             }
           }
         })
@@ -88,6 +98,20 @@ export default {
           }
           else {
             console.log('got an event', res)
+            switch(res.event) {
+              case 'Registered': {
+                this.$store.commit('editMyProperty', {
+                  id: res.args._tokenId.toString(),
+                  key: 'price',
+                  value: res.args._price.toString(),
+                })
+                this.$store.commit('stopLoading')
+                break
+              }
+              default: {
+                this.$store.commit('stopLoading')
+              }
+            }
           }
         })
 
