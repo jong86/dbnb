@@ -24,12 +24,7 @@
         Id: {{property.id}}
       </div>
       <div class="my-property-col">
-        URI:
-        <input v-model="$store.state.myProperties[key].uri" />
-        <button @click="setURI(property.id, $store.state.myProperties[key].uri)">Save</button>
-      </div>
-      <div class="my-property-col">
-        Requested: {{property.requested}}
+        URI: {{property.uri}}
       </div>
       <div class="my-property-col">
         <button
@@ -38,7 +33,10 @@
         >Register</button>
         <span v-else>Price: {{property.price}}</span>
       </div>
-      <div class="my-property-col">
+      <div class="my-property-col" v-if="property.price">
+        Requests: {{property.requested}}
+      </div>
+      <div class="my-property-col" v-if="property.price">
         Occupant: {{property.occupant}}
       </div>
     </div>
