@@ -6,6 +6,7 @@
     <div class="rental" v-for="rental in $store.state.rentals" :key="rental.id">
       Id: {{rental.id}}
       URI: {{rental.uri}}
+      Price: {{rental.price}}
       <button @click="request(rental.id)">Request</button>
     </div>
   </site-section>
@@ -66,19 +67,22 @@ export default {
 
           var price = parseInt(response[0].toString())
           var requested = response[1]
-          var occupant = response[2] === "0x0000000000000000000000000000000000000000" ? 'Vacant' : response[2]
+          var occupant = response[2]
 
         } catch (e) {
           console.error(e);
         }
 
-        properties.push({
-          id: propertyId.toString(),
-          uri,
-          requested,
-          price,
-          occupant,
-        })
+        // Only push vacant properties
+        if (occupant === "0x0000000000000000000000000000000000000000") {
+          properties.push({
+            id: propertyId.toString(),
+            uri,
+            requested,
+            price,
+            occupant,
+          })
+        }
       })
 
       this.$store.commit('setKeyToValue', { key: 'rentals', value: properties })
