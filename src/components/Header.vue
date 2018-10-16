@@ -25,7 +25,6 @@ export default {
     links: [
       { label: 'Find Rental', path: '/' },
       { label: 'View My Properties', path: '/my-properties' },
-      { label: 'View My Requests', path: '/my-requests' },
     ],
   }),
 }
