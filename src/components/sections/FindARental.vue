@@ -27,13 +27,13 @@ export default {
     }
   },
   mounted() {
-    this.$store.commit('startLoading', { message: 'Finding properties...' })
+    this.$store.commit('startLoading', { message: 'Finding available rentals...' })
     retryInvoke(this.getRentals)
   },
   methods: {
     async getRentals() {
-      const propertyContract = this.$store.state.propertyContract
-      const totalSupply = await propertyContract.totalSupply()
+      const propertyRegistryContract = this.$store.state.propertyRegistryContract
+      const totalSupply = await propertyRegistryContract.totalSupply()
       const address = await getAddress()
 
       try {
