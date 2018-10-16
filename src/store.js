@@ -48,6 +48,11 @@ const store = new Vuex.Store({
       Vue.set(state.myProperties[index], key, value) // Reactively sets object key
     },
 
+    editRental(state, { id, key, value }) {
+      const index = state.myProperties.findIndex(element => element.id === id)
+      Vue.set(state.rentals[index], key, value) // Reactively sets object key
+    },
+
     setKeyToValue(state, { key, value }) {
       Vue.set(state, key, value)
     }

@@ -15,6 +15,7 @@ contract PropertyRegistry {
     uint price;
     address[] requested;
     mapping(address => Request) requests;
+    mapping(address => bool) hasActiveRequest;
     mapping(address => bool) isApproved;
     address occupant;
   }
@@ -61,6 +62,7 @@ contract PropertyRegistry {
     regProps[_tokenId].requested.push(msg.sender);
     regProps[_tokenId].requests[msg.sender] = Request(_checkIn, _checkOut);
     emit Requested(_tokenId);
+    regProps[_tokenId].hasActiveRequest[msg.sender] = true;
   }
 
   function approveRequest(uint _tokenId, address _address) external onlyOwner(_tokenId) {
@@ -110,5 +112,9 @@ contract PropertyRegistry {
 
   function getAllRegProps() external view returns(uint[]) {
     return allRegProps;
+  }
+
+  function haveIRequested(uint _tokenId) external view returns(bool) {
+    return regProps[_tokenId].hasActiveRequest[msg.sender];
   }
 }

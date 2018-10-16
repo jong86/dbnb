@@ -108,6 +108,15 @@ export default {
                 this.$store.commit('stopLoading')
                 break
               }
+              case 'Requested': {
+                this.$store.commit('editRental', {
+                  id: res.args._tokenId.toString(),
+                  key: 'hasSentRequest',
+                  value: true,
+                })
+                this.$store.commit('stopLoading')
+                break;
+              }
               default: {
                 this.$store.commit('stopLoading')
               }

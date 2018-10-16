@@ -7,7 +7,11 @@
       Id: {{rental.id}}
       URI: {{rental.uri}}
       Price: {{rental.price}}
-      <button @click="request(rental.id)">Request</button>
+      <button
+        @click="request(rental.id)"
+        v-if="!rental.hasSentRequest"
+      >Request</button>
+      <span v-else>You have sent a request for this property</span>
     </div>
   </site-section>
 </template>
@@ -19,13 +23,9 @@ import getAddress from '@/util/getAddress'
 import { now } from '@/util/time.js'
 
 export default {
+  name: 'FindARental',
   components: {
     SiteSection,
-  },
-  data() {
-    return {
-      rentals: [],
-    }
   },
   mounted() {
     this.$store.commit('startLoading', { message: 'Finding available rentals...' })
@@ -73,6 +73,15 @@ export default {
           console.error(e);
         }
 
+        try {
+          var hasSentRequest = await propertyRegistryContract.haveIRequested(propertyId, {
+            from: address,
+            gas: 200000,
+          })
+        } catch (e) {
+          console.error(e)
+        }
+
         // Only push vacant properties
         if (occupant === "0x0000000000000000000000000000000000000000") {
           properties.push({
@@ -81,6 +90,7 @@ export default {
             requested,
             price,
             occupant,
+            hasSentRequest,
           })
         }
       })
@@ -90,7 +100,7 @@ export default {
     },
 
     async request(id) {
-      this.$store.commit('startLoading', { message: "Waiting for transaction to be signed..." })
+      this.$store.commit('startLoading', { message: "Waiting for signature..." })
       const address = await getAddress()
 
       const propertyRegistryContract = this.$store.state.propertyRegistryContract
@@ -103,8 +113,6 @@ export default {
       } catch (e) {
         console.error(e)
       }
-
-      this.$store.commit('stopLoading')
     },
   }
 }

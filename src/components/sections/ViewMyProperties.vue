@@ -49,6 +49,7 @@ import getAddress from '@/util/getAddress'
 import retryInvoke from '@/util/retryInvoke'
 
 export default {
+  name: 'ViewMyProperties',
   components: {
     SiteSection,
   },

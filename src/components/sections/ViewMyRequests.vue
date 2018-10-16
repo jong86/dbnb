@@ -12,6 +12,7 @@ import store from '@/src/store.js'
 import { now } from '@/util/time.js'
 
 export default {
+  name: 'ViewMyRequests',
   components: {
     SiteSection,
   },
