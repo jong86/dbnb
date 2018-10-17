@@ -171,14 +171,15 @@ export default {
   align-items: center;
   flex-direction: column;
 }
-.my-property {
+
+.property {
   display: flex;
   align-items: center;
   border: 1px solid gainsboro;
   border-radius: 4px;
   margin: 4px;
   padding: 4px;
-  .my-property-col {
+  .property-col {
     padding: 4px;
   }
 }

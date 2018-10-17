@@ -17,18 +17,18 @@
         Create new property
       </button>
     </div>
-    <!-- <div
-      class="my-property"
+    <div
+      class="property"
       v-for="(property, key) in $store.state.myProperties"
       :key="key"
     >
-      <div class="my-property-col">
+      <div class="property-col">
         Id: {{property.id}}
       </div>
-      <div class="my-property-col">
+      <div class="property-col">
         URI: {{property.uri}}
       </div>
-      <div class="my-property-col">
+      <div class="property-col">
         <button
           v-if="!property.price"
           @click="registerProperty(property.id)"
@@ -40,7 +40,7 @@
         </span>
       </div>
       <div
-        class="my-property-col"
+        class="property-col"
         v-if="property.price"
       >
         Requests:
@@ -55,69 +55,23 @@
         </div>
       </div>
       <div
-        class="my-property-col"
+        class="property-col"
         v-if="property.price"
       >
         Occupant: {{property.occupant}}
       </div>
-    </div> -->
-    <property
-      v-for="(property, key) in $store.state.myProperties"
-      :key="key"
-    >
-      <slot>
-        Id: {{property.id}}
-      </slot>
-      <slot>
-        URI: {{property.uri}}
-      </slot>
-      <div class="my-property-col">
-        <button
-          v-if="!property.price"
-          @click="registerProperty(property.id)"
-        >
-          Register
-        </button>
-        <span v-else>
-          Price: {{property.price}}
-        </span>
-      </div>
-      <div
-        class="my-property-col"
-        v-if="property.price"
-      >
-        Requests:
-        <div
-          v-for="(address, index) in property.requested"
-          :key="index"
-        >
-          {{address}}
-          <button @click="approveRequest(property.id, address)">
-            Approve
-          </button>
-        </div>
-      </div>
-      <div
-        class="my-property-col"
-        v-if="property.price"
-      >
-        Occupant: {{property.occupant}}
-      </div>
-    </property>
+    </div>
   </site-section>
 </template>
 
 <script>
 import SiteSection from '@/src/components/reusables/SiteSection'
-import Property from '@/src/components/reusables/Property'
-import getAddress from '@/util/getAddress'
 import retryInvoke from '@/util/retryInvoke'
 
 export default {
   name: 'ViewMyProperties',
   components: {
     SiteSection,
-    Property,
   },
   data() {
     return {
