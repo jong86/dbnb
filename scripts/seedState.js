@@ -17,7 +17,9 @@ module.exports = async function(done) {
   await propertyRegistry.registerProperty(tokenId, 100, { from: owner })
 
   const now = Date.now() / 1000
-  await propertyRegistry.request(tokenId, now, now + 10000, { from: bob })
+  await propertyRegistry.request(tokenId, now, now + 100000, { from: owner })
+
+  await propertyRegistry.approveRequest(tokenId, owner, { from: owner })
 
 
   done()

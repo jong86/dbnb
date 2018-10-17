@@ -125,11 +125,29 @@ export default {
     },
 
     async checkIn(id) {
-      console.log('check in', id);
+      const { propertyRegistryContract } = this.$store.state
+      const txOptions = await getTxOptions()
+
+      this.$store.commit('startLoading', { message: "Waiting for signature..." })
+
+      try {
+        await propertyRegistryContract.checkIn(id, txOptions)
+      } catch (e) {
+        console.error(e)
+      }
     },
 
     async checkOut(id) {
-      console.log('check out', id);
+      const { propertyRegistryContract } = this.$store.state
+      const txOptions = await getTxOptions()
+
+      this.$store.commit('startLoading', { message: "Waiting for signature..." })
+
+      try {
+        await propertyRegistryContract.checkOut(id, txOptions)
+      } catch (e) {
+        console.error(e)
+      }
     },
   }
 }

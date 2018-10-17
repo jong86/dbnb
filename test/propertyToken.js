@@ -13,10 +13,10 @@ contract('PropertyToken', accounts => {
     assert(propertyToken !== undefined, 'was not deployed')
   })
 
-  it('should allow alice to mint Property Token for bob', async () => {
+  it('should allow owner to mint Property Token for bob', async () => {
     const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
     const allocation = 1000
-    const tx = await propertyToken.mint(bob, allocation)
+    const tx = await propertyToken.mint(bob, allocation, { from: owner })
     const balance = await propertyToken.balanceOf.call(bob)
     assert(balance.toNumber() === allocation, 'balance')
   })
