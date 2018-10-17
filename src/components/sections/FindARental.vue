@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import SiteSection from '@/src/components/reusables/SiteSection.vue'
+import SiteSection from '@/src/components/reusables/SiteSection'
 import retryInvoke from '@/util/retryInvoke'
 import { now } from '@/util/time.js'
 
