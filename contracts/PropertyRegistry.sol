@@ -99,12 +99,24 @@ contract PropertyRegistry {
     return regProps[_tokenId].isApproved[msg.sender];
   }
 
+  function checkIfAddressApproved(uint _tokenId, address _address) external view onlyOwner(_tokenId) returns (bool) {
+    return regProps[_tokenId].isApproved[_address];
+  }
+
   function getOccupant(uint _tokenId) external view onlyOwner(_tokenId) returns (address) {
     return regProps[_tokenId].occupant;
   }
 
-  function getRegPropData(uint _tokenId) external view returns(uint, address[], address) {
+  function getRegPropDataAsOwner(uint _tokenId) external view onlyOwner(_tokenId) returns(uint, address[], address) {
     return (regProps[_tokenId].price, regProps[_tokenId].requested, regProps[_tokenId].occupant);
+  }
+
+  function getRegPropDataAsCustomer(uint _tokenId) external view returns(uint, bool) {
+    bool vacant;
+    if (regProps[_tokenId].occupant != address(0)) {
+      vacant = true;
+    }
+    return (regProps[_tokenId].price, regProps[_tokenId].requested, vacant);
   }
 
   function getAllRegProps() external view returns(uint[]) {

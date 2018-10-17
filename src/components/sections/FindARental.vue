@@ -28,6 +28,7 @@ export default {
     SiteSection,
   },
   mounted() {
+    console.log('this.$store.getters.txOptions', this.$store.getters.txOptions);
     this.$store.commit('startLoading', { message: 'Finding available rentals...' })
     retryInvoke(this.getRentals)
   },
@@ -35,15 +36,12 @@ export default {
     async getRentals() {
       const propertyContract = this.$store.state.propertyContract
       const propertyRegistryContract = this.$store.state.propertyRegistryContract
-      const address = await getAddress()
+      const { txOptions } = this.$store.getters
       let propertyIds
       const properties = []
 
       try {
-        propertyIds = await propertyRegistryContract.getAllRegProps({
-          from: address,
-          gas: 200000,
-        })
+        propertyIds = await propertyRegistryContract.getAllRegProps(txOptions)
         console.log('propertyIds', propertyIds);
       } catch (e) {
         console.error(e)
@@ -51,19 +49,13 @@ export default {
 
       propertyIds.forEach(async propertyId => {
         try {
-          var uri = await propertyContract.getURI(propertyId, {
-            from: address,
-            gas: 200000,
-          })
+          var uri = await propertyContract.getURI(propertyId, txOptions)
         } catch (e) {
           console.error(e);
         }
 
         try {
-          const response = await propertyRegistryContract.getRegPropData(propertyId, {
-            from: address,
-            gas: 200000,
-          })
+          const response = await propertyRegistryContract.getRegPropData(propertyId, txOptions)
 
           var price = parseInt(response[0].toString())
           var requested = response[1]
@@ -74,10 +66,7 @@ export default {
         }
 
         try {
-          var hasSentRequest = await propertyRegistryContract.haveIRequested(propertyId, {
-            from: address,
-            gas: 200000,
-          })
+          var hasSentRequest = await propertyRegistryContract.haveIRequested(propertyId, txOptions)
         } catch (e) {
           console.error(e)
         }
@@ -87,9 +76,7 @@ export default {
           properties.push({
             id: propertyId.toString(),
             uri,
-            requested,
             price,
-            occupant,
             hasSentRequest,
           })
         }

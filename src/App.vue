@@ -121,13 +121,13 @@ export default {
               case 'Approved': {
                 this.$store.commit('editRental', {
                   id: res.args._tokenId.toString(),
-                  key: 'hasSentRequest',
-                  value: true,
+                  key: 'isApproved',
+                  value: res.args._isApproved,
                 })
                 this.$store.commit('editMyProperty', {
                   id: res.args._tokenId.toString(),
-                  key: 'hasSentRequest',
-                  value: true,
+                  key: 'isApproved',
+                  value: res.args._isApproved,
                 })
                 this.$store.commit('stopLoading')
                 break;
