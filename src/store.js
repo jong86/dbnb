@@ -46,7 +46,12 @@ const store = new Vuex.Store({
     },
     editMyProperty(state, { id, key, value }) {
       const index = state.myProperties.findIndex(element => element.id === id)
-      Vue.set(state.myProperties[index], key, value) // Reactively sets object key
+      Vue.set(state.myProperties[index], key, value)
+    },
+    setPropertyRequestAsApproved(state, { propertyId, address }) {
+      const propertyIndex = state.myProperties.findIndex(element => element.id === propertyId)
+      const addressIndex = state.myProperties[propertyIndex].requested.findIndex(element => element === address)
+      Vue.set(state.myProperties[propertyIndex].requested[addressIndex], 'isApproved', true)
     },
 
     setRentals(state, rentals) {
@@ -54,7 +59,7 @@ const store = new Vuex.Store({
     },
     editRental(state, { id, key, value }) {
       const index = state.myProperties.findIndex(element => element.id === id)
-      Vue.set(state.rentals[index], key, value) // Reactively sets object key
+      Vue.set(state.rentals[index], key, value)
     },
   },
 })

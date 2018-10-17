@@ -45,12 +45,15 @@
       >
         Requests:
         <div
-          v-for="(address, index) in property.requested"
+          v-for="(request, index) in property.requested"
           :key="index"
         >
-          {{address}}
-          <button @click="approveRequest(property.id, address)">
+          {{request.address}}
+          <button v-if="!request.isApproved" @click="approveRequest(property.id, request.address)">
             Approve
+          </button>
+          <button v-else disabled>
+            Approved
           </button>
         </div>
       </div>
@@ -87,7 +90,6 @@ export default {
     async getProperties() {
       const { propertyContract, propertyRegistryContract } = this.$store.state
       const txOptions = await getTxOptions()
-      console.log('txOptions', txOptions);
       let propertyIds = []
       const properties = []
 
@@ -106,7 +108,7 @@ export default {
           }
 
           try {
-            const response = await propertyRegistryContract.getRegPropData(propertyId, txOptions)
+            const response = await propertyRegistryContract.getRegPropDataAsOwner(propertyId, txOptions)
             var price = parseInt(response[0].toString())
             var requested = response[1]
             var occupant = response[2] === "0x0000000000000000000000000000000000000000" ? 'Vacant' : response[2]
@@ -129,7 +131,7 @@ export default {
           properties.push({
             id: propertyId.toString(),
             uri,
-            requestedWithApprovalStatus,
+            requested: requestedWithApprovalStatus,
             price,
             occupant,
           })

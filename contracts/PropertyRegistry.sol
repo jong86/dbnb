@@ -111,12 +111,15 @@ contract PropertyRegistry {
     return (regProps[_tokenId].price, regProps[_tokenId].requested, regProps[_tokenId].occupant);
   }
 
-  function getRegPropDataAsCustomer(uint _tokenId) external view returns(uint, bool) {
+  function getRegPropDataAsCustomer(uint _tokenId) external view returns(uint, bool, bool, bool) {
+    uint price = regProps[_tokenId].price;
     bool vacant;
     if (regProps[_tokenId].occupant != address(0)) {
       vacant = true;
     }
-    return (regProps[_tokenId].price, vacant);
+    bool hasActiveRequest = regProps[_tokenId].hasActiveRequest[msg.sender];
+    bool isApproved = regProps[_tokenId].isApproved[msg.sender];
+    return (price, vacant, hasActiveRequest, isApproved);
   }
 
   function getAllRegProps() external view returns(uint[]) {
@@ -124,6 +127,5 @@ contract PropertyRegistry {
   }
 
   function haveIRequested(uint _tokenId) external view returns(bool) {
-    return regProps[_tokenId].hasActiveRequest[msg.sender];
   }
 }

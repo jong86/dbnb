@@ -4,22 +4,44 @@
       Find a rental
     </template>
     <div
-      class="rental"
+      class="property"
       v-for="rental in $store.state.rentals"
       :key="rental.id"
     >
-      Id: {{rental.id}}
-      URI: {{rental.uri}}
-      Price: {{rental.price}}
-      <button
-        @click="request(rental.id)"
-        v-if="!rental.hasSentRequest"
+      <div
+        class="property-col"
       >
-        Request
-      </button>
-      <span v-else>
-        You have sent a request for this property
-      </span>
+        Id: {{rental.id}}
+      </div>
+      <div
+        class="property-col"
+      >
+        URI: {{rental.uri}}
+      </div>
+      <div
+        class="property-col"
+      >
+        Price: {{rental.price}}
+      </div>
+      <div
+        class="property-col"
+      >
+        <div v-if="rental.isApproved">
+          Request approved
+        </div> 
+        <div v-else>
+          <button
+            @click="request(rental.id)"
+            v-if="!rental.hasSentRequest"
+          >
+            Request
+          </button>
+          <span v-else>
+            You have sent a request for this property
+          </span>
+        </div>
+      </div>
+
     </div>
   </site-section>
 </template>
@@ -60,30 +82,24 @@ export default {
         }
 
         try {
-          const response = await propertyRegistryContract.getRegPropData(propertyId, txOptions)
+          const response = await propertyRegistryContract.getRegPropDataAsCustomer(propertyId, txOptions)
           var price = parseInt(response[0].toString())
-          var requested = response[1]
-          var occupant = response[2]
-
+          var vacant = response[1]
+          var hasSentRequest = response[2]
+          var isApproved = response[3]
         } catch (e) {
           console.error(e);
         }
 
-        try {
-          var hasSentRequest = await propertyRegistryContract.haveIRequested(propertyId, txOptions)
-        } catch (e) {
-          console.error(e)
-        }
-
         // Only push vacant properties
-        if (occupant === "0x0000000000000000000000000000000000000000") {
-          properties.push({
-            id: propertyId.toString(),
-            uri,
-            price,
-            hasSentRequest,
-          })
-        }
+        properties.push({
+          id: propertyId.toString(),
+          uri,
+          price,
+          vacant,
+          hasSentRequest,
+          isApproved,
+        })
       })
 
       this.$store.commit('setRentals', properties)
