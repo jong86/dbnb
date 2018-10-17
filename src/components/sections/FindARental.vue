@@ -27,6 +27,7 @@
 <script>
 import SiteSection from '@/src/components/reusables/SiteSection'
 import retryInvoke from '@/util/retryInvoke'
+import getTxOptions from '@/util/getTxOptions'
 import { now } from '@/util/time.js'
 
 export default {
@@ -41,8 +42,8 @@ export default {
   methods: {
     async getRentals() {
       const { propertyContract, propertyRegistryContract } = this.$store.state
-      const { txOptions } = this.$store.getters
-      let propertyIds
+      const txOptions = await getTxOptions()
+      let propertyIds = []
       const properties = []
 
       try {
@@ -91,7 +92,7 @@ export default {
 
     async request(id) {
       const { propertyRegistryContract } = this.$store.state
-      const { txOptions } = this.$store.getters
+      const txOptions = await getTxOptions()
 
       const checkIn = prompt('In how many days do you want to check in?')
       const checkOut = prompt('How many nights do you want to stay?') + checkIn

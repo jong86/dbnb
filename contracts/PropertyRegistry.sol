@@ -116,7 +116,7 @@ contract PropertyRegistry {
     if (regProps[_tokenId].occupant != address(0)) {
       vacant = true;
     }
-    return (regProps[_tokenId].price, regProps[_tokenId].requested, vacant);
+    return (regProps[_tokenId].price, vacant);
   }
 
   function getAllRegProps() external view returns(uint[]) {

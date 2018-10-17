@@ -67,6 +67,7 @@
 <script>
 import SiteSection from '@/src/components/reusables/SiteSection'
 import retryInvoke from '@/util/retryInvoke'
+import getTxOptions from '@/util/getTxOptions'
 
 export default {
   name: 'ViewMyProperties',
@@ -85,8 +86,9 @@ export default {
   methods: {
     async getProperties() {
       const { propertyContract, propertyRegistryContract } = this.$store.state
-      const { txOptions } = this.$store.getters
-      let propertyIds
+      const txOptions = await getTxOptions()
+      console.log('txOptions', txOptions);
+      let propertyIds = []
       const properties = []
 
       try {
@@ -95,31 +97,44 @@ export default {
         console.error(e)
       }
 
-      propertyIds.forEach(async propertyId => {
-        try {
-          var uri = await propertyContract.getURI(propertyId, txOptions)
-        } catch (e) {
-          console.error(e);
-        }
+      if (propertyIds.length > 0) {
+        propertyIds.forEach(async propertyId => {
+          try {
+            var uri = await propertyContract.getURI(propertyId, txOptions)
+          } catch (e) {
+            console.error(e);
+          }
 
-        try {
-          const response = await propertyRegistryContract.getRegPropData(propertyId, txOptions)
-          var price = parseInt(response[0].toString())
-          var requested = response[1]
-          var occupant = response[2] === "0x0000000000000000000000000000000000000000" ? 'Vacant' : response[2]
+          try {
+            const response = await propertyRegistryContract.getRegPropData(propertyId, txOptions)
+            var price = parseInt(response[0].toString())
+            var requested = response[1]
+            var occupant = response[2] === "0x0000000000000000000000000000000000000000" ? 'Vacant' : response[2]
+            var isApproved = response[3]
 
-        } catch (e) {
-          console.error(e);
-        }
+          } catch (e) {
+            console.error(e);
+          }
 
-        properties.push({
-          id: propertyId.toString(),
-          uri,
-          requested,
-          price,
-          occupant,
+          const requestedWithApprovalStatus = []
+          try {
+            requested.forEach(async address => requestedWithApprovalStatus.push({
+              address,
+              isApproved: await propertyRegistryContract.checkIfAddressApproved(propertyId, address, txOptions)
+            }))
+          } catch (e) {
+            console.error(e)
+          }
+
+          properties.push({
+            id: propertyId.toString(),
+            uri,
+            requestedWithApprovalStatus,
+            price,
+            occupant,
+          })
         })
-      })
+      }
 
       this.$store.commit('setMyProperties', properties)
       this.$store.commit('stopLoading')
@@ -127,7 +142,7 @@ export default {
 
     async createWithURI(uri) {
       const { propertyContract } = this.$store.state
-      const { txOptions } = this.$store.getters
+      const txOptions = await getTxOptions()
 
       this.$store.commit('startLoading', { message: 'Waiting for signature...' })
 
@@ -142,7 +157,7 @@ export default {
 
     async registerProperty(id) {
       const { propertyRegistryContract } = this.$store.state
-      const { txOptions } = this.$store.getters
+      const txOptions = await getTxOptions()
 
       const price = prompt("How much to charge per night?")
       this.$store.commit('startLoading', { message: 'Waiting for signature...' })
@@ -158,7 +173,7 @@ export default {
 
     async approveRequest(propertyId, addressOfRequester) {
       const { propertyRegistryContract } = this.$store.state
-      const { txOptions } = this.$store.getters
+      const txOptions = await getTxOptions()
 
       this.$store.commit('startLoading', { message: 'Waiting for signature...' })
 

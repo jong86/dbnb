@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import getAddress from '@/util/getAddress'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
@@ -58,15 +57,6 @@ const store = new Vuex.Store({
       Vue.set(state.rentals[index], key, value) // Reactively sets object key
     },
   },
-
-  getters: {
-    async txOptions() {
-      return {
-        from: await getAddress(),
-        gas: 200000,
-      }
-    },
-  }
 })
 
 export default store
