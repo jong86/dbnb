@@ -19,7 +19,6 @@
 <script>
 import SiteSection from '@/src/components/reusables/SiteSection.vue'
 import retryInvoke from '@/util/retryInvoke'
-import getAddress from '@/util/getAddress'
 import { now } from '@/util/time.js'
 
 export default {
@@ -28,21 +27,18 @@ export default {
     SiteSection,
   },
   mounted() {
-    console.log('this.$store.getters.txOptions', this.$store.getters.txOptions);
     this.$store.commit('startLoading', { message: 'Finding available rentals...' })
     retryInvoke(this.getRentals)
   },
   methods: {
     async getRentals() {
-      const propertyContract = this.$store.state.propertyContract
-      const propertyRegistryContract = this.$store.state.propertyRegistryContract
+      const { propertyContract, propertyRegistryContract } = this.$store.state
       const { txOptions } = this.$store.getters
       let propertyIds
       const properties = []
 
       try {
         propertyIds = await propertyRegistryContract.getAllRegProps(txOptions)
-        console.log('propertyIds', propertyIds);
       } catch (e) {
         console.error(e)
       }
@@ -56,7 +52,6 @@ export default {
 
         try {
           const response = await propertyRegistryContract.getRegPropData(propertyId, txOptions)
-
           var price = parseInt(response[0].toString())
           var requested = response[1]
           var occupant = response[2]
@@ -87,19 +82,16 @@ export default {
     },
 
     async request(id) {
+      const { propertyRegistryContract } = this.$store.state
+      const { txOptions } = this.$store.getters
+
       const checkIn = prompt('In how many days do you want to check in?')
       const checkOut = prompt('How many nights do you want to stay?') + checkIn
 
       this.$store.commit('startLoading', { message: "Waiting for signature..." })
-      const address = await getAddress()
-
-      const propertyRegistryContract = this.$store.state.propertyRegistryContract
 
       try {
-        await propertyRegistryContract.request(id, now(checkIn, 'days'), now(checkOut, 'days'), {
-          from: address,
-          gas: 200000,
-        })
+        await propertyRegistryContract.request(id, now(checkIn, 'days'), now(checkOut, 'days'), txOptions)
       } catch (e) {
         console.error(e)
       }

@@ -67,37 +67,26 @@ export default {
   },
   methods: {
     async getProperties() {
-      const propertyContract = this.$store.state.propertyContract
-      const propertyRegistryContract = this.$store.state.propertyRegistryContract
-      const address = await getAddress()
+      const { propertyContract, propertyRegistryContract } = this.$store.state
+      const { txOptions } = this.$store.getters
       let propertyIds
       const properties = []
 
       try {
-        propertyIds = await propertyContract.getProperties({
-          from: address,
-          gas: 200000,
-        })
+        propertyIds = await propertyContract.getProperties(txOptions)
       } catch (e) {
         console.error(e)
       }
 
       propertyIds.forEach(async propertyId => {
         try {
-          var uri = await propertyContract.getURI(propertyId, {
-            from: address,
-            gas: 200000,
-          })
+          var uri = await propertyContract.getURI(propertyId, txOptions)
         } catch (e) {
           console.error(e);
         }
 
         try {
-          const response = await propertyRegistryContract.getRegPropData(propertyId, {
-            from: address,
-            gas: 200000,
-          })
-
+          const response = await propertyRegistryContract.getRegPropData(propertyId, txOptions)
           var price = parseInt(response[0].toString())
           var requested = response[1]
           var occupant = response[2] === "0x0000000000000000000000000000000000000000" ? 'Vacant' : response[2]
@@ -120,16 +109,13 @@ export default {
     },
 
     async createWithURI(uri) {
+      const { propertyContract } = this.$store.state
+      const { txOptions } = this.$store.getters
+
       this.$store.commit('startLoading', { message: 'Waiting for signature...' })
-      const propertyContract = this.$store.state.propertyContract
-      const propertyRegistryContract = this.$store.state.propertyRegistryContract
-      const address = await getAddress()
 
       try {
-        await propertyContract.createWithURI(uri, {
-          from: address,
-          gas: 200000,
-        });
+        await propertyContract.createWithURI(uri, txOptions);
       } catch(e) {
         console.error(e);
       }
@@ -138,17 +124,14 @@ export default {
     },
 
     async registerProperty(id) {
-      const price = prompt("How much to charge per night?")
+      const { propertyRegistryContract } = this.$store.state
+      const { txOptions } = this.$store.getters
 
+      const price = prompt("How much to charge per night?")
       this.$store.commit('startLoading', { message: 'Waiting for signature...' })
-      const propertyRegistryContract = this.$store.state.propertyRegistryContract
-      const address = await getAddress()
 
       try {
-        await propertyRegistryContract.registerProperty(id, price, {
-          from: address,
-          gas: 200000,
-        });
+        await propertyRegistryContract.registerProperty(id, price, txOptions);
       } catch(e) {
         console.error(e);
       }
@@ -157,15 +140,13 @@ export default {
     },
 
     async approveRequest(propertyId, addressOfRequester) {
+      const { propertyRegistryContract } = this.$store.state
+      const { txOptions } = this.$store.getters
+
       this.$store.commit('startLoading', { message: 'Waiting for signature...' })
-      const propertyRegistryContract = this.$store.state.propertyRegistryContract
-      const address = await getAddress()
 
       try {
-        await propertyRegistryContract.approveRequest(propertyId, addressOfRequester, {
-          from: address,
-          gas: 200000,
-        });
+        await propertyRegistryContract.approveRequest(propertyId, addressOfRequester, txOptions);
       } catch(e) {
         console.error(e);
       }
