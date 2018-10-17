@@ -34,7 +34,10 @@
         <span v-else>Price: {{property.price}}</span>
       </div>
       <div class="my-property-col" v-if="property.price">
-        Requests: {{property.requested}}
+        Requests:
+        <div v-for="(address, index) in property.requested" :key="index">
+          {{address}}<button @click="approveRequest(property.id, address)">Approve</button>
+        </div>
       </div>
       <div class="my-property-col" v-if="property.price">
         Occupant: {{property.occupant}}
@@ -143,6 +146,23 @@ export default {
 
       try {
         await propertyRegistryContract.registerProperty(id, price, {
+          from: address,
+          gas: 200000,
+        });
+      } catch(e) {
+        console.error(e);
+      }
+
+      this.$store.commit('startLoading', { message: 'Waiting for block to be mined...' })
+    },
+
+    async approveRequest(propertyId, addressOfRequester) {
+      this.$store.commit('startLoading', { message: 'Waiting for signature...' })
+      const propertyRegistryContract = this.$store.state.propertyRegistryContract
+      const address = await getAddress()
+
+      try {
+        await propertyRegistryContract.approveRequest(propertyId, addressOfRequester, {
           from: address,
           gas: 200000,
         });

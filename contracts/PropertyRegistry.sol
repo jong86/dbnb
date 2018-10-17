@@ -35,7 +35,7 @@ contract PropertyRegistry {
 
   event Registered(uint indexed _tokenId, uint _price);
   event Requested(uint indexed _tokenId);
-  event Approved(uint indexed _tokenId);
+  event Approved(uint indexed _tokenId, address _address);
   event CheckIn(uint indexed _tokenId);
   event CheckOut(uint indexed _tokenId);
 
@@ -67,6 +67,7 @@ contract PropertyRegistry {
 
   function approveRequest(uint _tokenId, address _address) external onlyOwner(_tokenId) {
     regProps[_tokenId].isApproved[_address] = true;
+    emit Approved(_tokenId, _address);
   }
 
   function checkIn(uint _tokenId) external {
@@ -86,10 +87,6 @@ contract PropertyRegistry {
 
 
   // External view functions
-
-  function viewRequested(uint _tokenId) external view onlyOwner(_tokenId) returns (address[]) {
-    return regProps[_tokenId].requested;
-  }
 
   function getRequest(uint _tokenId, address _address) external view onlyOwner(_tokenId) returns (uint, uint) {
     return (

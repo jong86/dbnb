@@ -46,6 +46,7 @@ export default {
     },
 
     getContract(json, web3 = window.web3) {
+      // Helper for initializing contracts
       const contract = truffleContract(json)
       contract.setProvider(web3.currentProvider)
       return contract.deployed()
@@ -110,6 +111,20 @@ export default {
               }
               case 'Requested': {
                 this.$store.commit('editRental', {
+                  id: res.args._tokenId.toString(),
+                  key: 'hasSentRequest',
+                  value: true,
+                })
+                this.$store.commit('stopLoading')
+                break;
+              }
+              case 'Approved': {
+                this.$store.commit('editRental', {
+                  id: res.args._tokenId.toString(),
+                  key: 'hasSentRequest',
+                  value: true,
+                })
+                this.$store.commit('editMyProperty', {
                   id: res.args._tokenId.toString(),
                   key: 'hasSentRequest',
                   value: true,
