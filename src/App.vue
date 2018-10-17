@@ -119,19 +119,20 @@ export default {
                 break;
               }
               case 'Approved': {
-                if (this.$router.currentRoute.name === 'FindARental') {
-                  this.$store.commit('editRental', {
-                    id: res.args._tokenId.toString(),
-                    key: 'isApproved',
-                    value: true,
-                  })
-                } else if (this.$router.currentRoute.name === 'ViewMyProperties') {
-                  this.$store.commit('setPropertyRequestAsApproved', {
-                    propertyId: res.args._tokenId.toString(),
-                    address: res.args._address,
-                  })
-                }
-                this.$store.commit('stopLoading')
+                location.reload()
+                // if (this.$router.currentRoute.name === 'FindARental') {
+                //   this.$store.commit('editRental', {
+                //     id: res.args._tokenId.toString(),
+                //     key: 'isApproved',
+                //     value: true,
+                //   })
+                // } else if (this.$router.currentRoute.name === 'ViewMyProperties') {
+                //   this.$store.commit('setPropertyRequestAsApproved', {
+                //     propertyId: res.args._tokenId.toString(),
+                //     address: res.args._address,
+                //   })
+                // }
+                // this.$store.commit('stopLoading')
                 break;
               }
               default: {
