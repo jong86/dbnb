@@ -49,6 +49,8 @@
           :key="index"
         >
           {{request.address}}
+          Check-in {{request.times[0]}}
+          Check-out {{request.times[1]}}
           <button v-if="!request.isApproved" @click="approveRequest(property.id, request.address)">
             Approve
           </button>
@@ -118,11 +120,13 @@ export default {
             console.error(e);
           }
 
-          const requestedWithApprovalStatus = []
+          const requested2 = []
+          // (can't get .map working for some reason here)
           try {
-            requested.forEach(async address => requestedWithApprovalStatus.push({
+            requested.forEach(async address => requested2.push({
               address,
-              isApproved: await propertyRegistryContract.checkIfAddressApproved(propertyId, address, txOptions)
+              isApproved: await propertyRegistryContract.checkIfAddressApproved(propertyId, address, txOptions),
+              times: await propertyRegistryContract.getRequest(propertyId, address),
             }))
           } catch (e) {
             console.error(e)
@@ -131,7 +135,7 @@ export default {
           properties.push({
             id: propertyId.toString(),
             uri,
-            requested: requestedWithApprovalStatus,
+            requested: requested2,
             price,
             occupant,
           })

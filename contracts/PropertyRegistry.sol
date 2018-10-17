@@ -125,7 +125,4 @@ contract PropertyRegistry {
   function getAllRegProps() external view returns(uint[]) {
     return allRegProps;
   }
-
-  function haveIRequested(uint _tokenId) external view returns(bool) {
-  }
 }
