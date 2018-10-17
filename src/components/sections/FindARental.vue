@@ -28,6 +28,8 @@
       >
         <div v-if="rental.isApproved">
           Request approved
+          <button @click="checkIn(rental.id)">Check-in</button>
+          <button @click="checkOut(rental.id)">Check-out</button>
         </div> 
         <div v-else>
           <button
@@ -120,6 +122,14 @@ export default {
       } catch (e) {
         console.error(e)
       }
+    },
+
+    async checkIn(id) {
+      console.log('check in', id);
+    },
+
+    async checkOut(id) {
+      console.log('check out', id);
     },
   }
 }
