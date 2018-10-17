@@ -3,15 +3,23 @@
     <template slot="title">
       Find a rental
     </template>
-    <div class="rental" v-for="rental in $store.state.rentals" :key="rental.id">
+    <div
+      class="rental"
+      v-for="rental in $store.state.rentals"
+      :key="rental.id"
+    >
       Id: {{rental.id}}
       URI: {{rental.uri}}
       Price: {{rental.price}}
       <button
         @click="request(rental.id)"
         v-if="!rental.hasSentRequest"
-      >Request</button>
-      <span v-else>You have sent a request for this property</span>
+      >
+        Request
+      </button>
+      <span v-else>
+        You have sent a request for this property
+      </span>
     </div>
   </site-section>
 </template>
@@ -99,7 +107,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-
-</style>

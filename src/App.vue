@@ -153,7 +153,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 #app {
   font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -162,7 +162,6 @@ export default {
   margin: 0;
   padding: 0;
 }
-
 .loader {
   width: fill-available;
   height: fill;
@@ -171,5 +170,25 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+.create-property {
+  width: fit-content;
+}
+.create-box {
+  border: 1px solid gainsboro;
+  padding: 16px;
+  border-radius: 4px;
+  margin: 16px;
+}
+.my-property {
+  display: flex;
+  align-items: center;
+  border: 1px solid gainsboro;
+  border-radius: 4px;
+  margin: 4px;
+  padding: 4px;
+  .my-property-col {
+    padding: 4px;
+  }
 }
 </style>

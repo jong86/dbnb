@@ -38,15 +38,11 @@ export default {
   padding-top: 4px;
   display: flex;
   flex-direction: column;
-
   .links {
     display: flex;
   }
-
   h3 {
     margin: 4px;
   }
 }
-
-
 </style>

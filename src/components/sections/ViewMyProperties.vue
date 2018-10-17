@@ -13,7 +13,9 @@
       <button
         class="create-button"
         @click="createWithURI(uri)"
-      >Create new property</button>
+      >
+        Create new property
+      </button>
     </div>
     <div
       class="my-property"
@@ -30,16 +32,32 @@
         <button
           v-if="!property.price"
           @click="registerProperty(property.id)"
-        >Register</button>
-        <span v-else>Price: {{property.price}}</span>
+        >
+          Register
+        </button>
+        <span v-else>
+          Price: {{property.price}}
+        </span>
       </div>
-      <div class="my-property-col" v-if="property.price">
+      <div
+        class="my-property-col"
+        v-if="property.price"
+      >
         Requests:
-        <div v-for="(address, index) in property.requested" :key="index">
-          {{address}}<button @click="approveRequest(property.id, address)">Approve</button>
+        <div
+          v-for="(address, index) in property.requested"
+          :key="index"
+        >
+          {{address}}
+          <button @click="approveRequest(property.id, address)">
+            Approve
+          </button>
         </div>
       </div>
-      <div class="my-property-col" v-if="property.price">
+      <div
+        class="my-property-col"
+        v-if="property.price"
+      >
         Occupant: {{property.occupant}}
       </div>
     </div>
@@ -156,28 +174,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-.create-property {
-  width: fit-content;
-}
-.create-box {
-  border: 1px solid gainsboro;
-  padding: 16px;
-  border-radius: 4px;
-  margin: 16px;
-}
-
-.my-property {
-  display: flex;
-  align-items: center;
-  border: 1px solid gainsboro;
-  border-radius: 4px;
-  margin: 4px;
-  padding: 4px;
-
-  .my-property-col {
-    padding: 4px;
-  }
-}
-</style>

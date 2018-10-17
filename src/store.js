@@ -7,15 +7,25 @@ const store = new Vuex.Store({
   state: {
     isLoading: false,
     loadingMessage: '',
-    isInitialized: false,
+
     web3: {},
     propertyContract: {},
     propertyRegistryContract: {},
+    isInitialized: false,
 
     myProperties: [],
+
     rentals: [],
   },
   mutations: {
+    startLoading(state, { message }) {
+      state.isLoading = true
+      state.loadingMessage = message || ''
+    },
+    stopLoading(state) {
+      state.isLoading = false
+    },
+
     setWeb3(state, web3) {
       state.web3 = web3
     },
@@ -27,14 +37,6 @@ const store = new Vuex.Store({
     },
     isInitialized(state) {
       state.isInitialized = true
-    },
-
-    startLoading(state, { message }) {
-      state.isLoading = true
-      state.loadingMessage = message || ''
-    },
-    stopLoading(state) {
-      state.isLoading = false
     },
 
     setMyProperties(state, myProperties) {
@@ -55,10 +57,6 @@ const store = new Vuex.Store({
       const index = state.myProperties.findIndex(element => element.id === id)
       Vue.set(state.rentals[index], key, value) // Reactively sets object key
     },
-
-    setKeyToValue(state, { key, value }) {
-      Vue.set(state, key, value)
-    }
   },
 
   getters: {
