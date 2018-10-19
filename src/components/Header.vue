@@ -8,7 +8,7 @@
         v-for="link of links"
         :key="link.path"
         :path="link.path"
-      >{{link.label}}</nav-button>
+      >{{ link.label }}</nav-button>
       <div class="balance">
         Your balance: {{ $store.state.tokenBalance / 100000000 }} PPT
       </div>
