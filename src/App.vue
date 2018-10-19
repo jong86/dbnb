@@ -118,6 +118,7 @@ export default {
                 this.$store.commit('stopLoading')
                 break;
               }
+              // Making this simpler since it was taking a long time:
               case 'Approved':
               case 'CheckIn':
               case 'CheckOut':

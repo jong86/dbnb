@@ -11,15 +11,15 @@ module.exports = async function(done) {
   const propertyToken = await PropertyToken.deployed('A', 'A', 8, { from: owner })
   const propertyRegistry = await PropertyRegistry.deployed(property.address, propertyToken.address, { from: owner })
 
-  let response
-  response = await property.createWithURI('la la la', { from: owner })
-  const tokenId = response.logs[0].args._tokenId
-  await propertyRegistry.registerProperty(tokenId, 100, { from: owner })
+  await propertyToken.mint(owner, 10000, { from: owner })
+  await propertyToken.mint(bob, 10000, { from: owner })
+  await propertyToken.mint(alice, 10000, { from: owner })
 
-  const now = Date.now() / 1000
-  await propertyRegistry.request(tokenId, now, now + 100000, { from: owner })
+  const totalSupply = await propertyToken.totalSupply({ from: owner })
+  console.log('totalSupply', totalSupply);
 
-  await propertyRegistry.approveRequest(tokenId, owner, { from: owner })
+  const balanceBob = await propertyToken.balanceOf(bob)
+  console.log('balanceBob', balanceBob);
 
   done()
 }
