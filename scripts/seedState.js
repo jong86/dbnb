@@ -14,10 +14,10 @@ module.exports = async function(done) {
   let response
   response = await property.createWithURI('la la la', { from: owner })
   const tokenId = response.logs[0].args._tokenId
-  await propertyRegistry.registerProperty(tokenId, 100, { from: owner })
+  await propertyRegistry.registerProperty(tokenId, 1, { from: owner })
 
   const now = Date.now() / 1000
-  await propertyRegistry.request(tokenId, now, now + 100000, { from: owner })
+  await propertyRegistry.request(tokenId, now, now + 100000, { from: bob })
 
   await propertyRegistry.approveRequest(tokenId, owner, { from: owner })
 

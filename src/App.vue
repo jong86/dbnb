@@ -23,9 +23,9 @@ import { SelfBuildingSquareSpinner } from 'epic-spinners'
 
 import Web3 from 'web3'
 import truffleContract from 'truffle-contract'
-import jsonProperty from '../build/contracts/Property.json'
-import jsonPropertyToken from '../build/contracts/PropertyToken.json'
-import jsonPropertyRegistry from '../build/contracts/PropertyRegistry.json'
+import jsonProperty from '@/build/contracts/Property.json'
+import jsonPropertyToken from '@/build/contracts/PropertyToken.json'
+import jsonPropertyRegistry from '@/build/contracts/PropertyRegistry.json'
 import getAddress from '@/util/getAddress'
 
 export default {
@@ -92,6 +92,7 @@ export default {
     async initPropertyToken() {
       return new Promise(async (resolve, reject) => {
         const instance = await this.getContract(jsonPropertyToken)
+        console.log('propertyToken instance', instance);
         this.$store.commit('setPropertyTokenContract', instance)
         const propertyTokenContract = this.$store.state.propertyTokenContract
 
@@ -102,11 +103,7 @@ export default {
           }
           else {
             console.log('got an event', res)
-            const { propertyTokenContract } = this.$store.state
-
-            const address = await getAddress()
-            const balance = await propertyTokenContract.balanceOf(address)
-            this.$store.commit('setTokenBalance', balance.toString())
+            this.getTokenBalance()
           }
         })
 
@@ -162,6 +159,15 @@ export default {
         resolve()
       })
     },
+
+    async getTokenBalance() {
+      const { propertyTokenContract } = this.$store.state
+      const address = await getAddress()
+      console.log('address', address);
+      const balance = await propertyTokenContract.balanceOf(address)
+      console.log('balance', balance);
+      this.$store.commit('setTokenBalance', balance.toString())
+    }
   },
 
   async mounted() {
@@ -170,6 +176,7 @@ export default {
     await this.initPropertyToken()
     await this.initPropertyRegistry()
     this.$store.commit('isInitialized')
+    this.getTokenBalance()
   },
 }
 </script>

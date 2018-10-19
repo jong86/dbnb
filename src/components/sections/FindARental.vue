@@ -21,7 +21,7 @@
       <div
         class="property-col"
       >
-        Price: {{rental.price}}
+        Price: {{rental.price}} PPT
       </div>
       <div
         class="property-col"
@@ -50,7 +50,7 @@
 
 <script>
 import SiteSection from '@/src/components/reusables/SiteSection'
-import retryInvoke from '@/util/retryInvoke'
+import invokeWhenInited from '@/util/invokeWhenInited'
 import getTxOptions from '@/util/getTxOptions'
 import { now } from '@/util/time.js'
 
@@ -61,7 +61,7 @@ export default {
   },
   mounted() {
     this.$store.commit('startLoading', { message: 'Finding available rentals...' })
-    retryInvoke(this.getRentals)
+    invokeWhenInited(this.getRentals)
   },
   methods: {
     async getRentals() {

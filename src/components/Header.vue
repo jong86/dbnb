@@ -10,7 +10,7 @@
         :path="link.path"
       >{{link.label}}</nav-button>
       <div class="balance">
-        Your balance: {{ $store.state.tokenBalance }} PPT
+        Your balance: {{ $store.state.tokenBalance / 100000000 }} PPT
       </div>
     </div>
   </div>

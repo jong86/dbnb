@@ -36,7 +36,7 @@
           Register
         </button>
         <span v-else>
-          Price: {{property.price}}
+          Price: {{property.price}} PPT
         </span>
       </div>
       <div
@@ -71,7 +71,7 @@
 
 <script>
 import SiteSection from '@/src/components/reusables/SiteSection'
-import retryInvoke from '@/util/retryInvoke'
+import invokeWhenInited from '@/util/invokeWhenInited'
 import getTxOptions from '@/util/getTxOptions'
 
 export default {
@@ -86,7 +86,7 @@ export default {
   },
   mounted() {
     this.$store.commit('startLoading', { message: 'Retrieving your properties...' })
-    retryInvoke(this.getProperties)
+    invokeWhenInited(this.getProperties)
   },
   methods: {
     async getProperties() {

@@ -7,9 +7,15 @@ module.exports = async function(done) {
 
   const propertyToken = await PropertyToken.deployed('A', 'A', 8, { from: owner })
 
-  await propertyToken.mint(owner, 10000, { from: owner })
-  await propertyToken.mint(bob, 10000, { from: owner })
-  await propertyToken.mint(alice, 10000, { from: owner })
+  await propertyToken.mint(owner, 8000000000, { from: owner })
+  await propertyToken.mint(bob, 8000000000, { from: owner })
+  await propertyToken.mint(alice, 8000000000, { from: owner })
+
+  const balanceOwner = await propertyToken.balanceOf(owner)
+  console.log('balanceOwner', balanceOwner, owner);
+
+  const balanceBob = await propertyToken.balanceOf(bob)
+  console.log('balanceBob', balanceBob, bob);
 
   done()
 }
