@@ -15,6 +15,8 @@ const store = new Vuex.Store({
     myProperties: [],
 
     rentals: [],
+
+    tokenBalance: 0,
   },
   mutations: {
     startLoading(state, { message }) {
@@ -30,6 +32,9 @@ const store = new Vuex.Store({
     },
     setPropertyContract(state, instance) {
       state.propertyContract = instance
+    },
+    setPropertyTokenContract(state, instance) {
+      state.propertyTokenContract = instance
     },
     setPropertyRegistryContract(state, instance) {
       state.propertyRegistryContract = instance
@@ -61,6 +66,10 @@ const store = new Vuex.Store({
       const index = state.myProperties.findIndex(element => element.id === id)
       Vue.set(state.rentals[index], key, value)
     },
+
+    setTokenBalance(state, balance) {
+      state.tokenBalance = balance
+    }
   },
 })
 

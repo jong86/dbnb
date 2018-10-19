@@ -24,7 +24,9 @@ import { SelfBuildingSquareSpinner } from 'epic-spinners'
 import Web3 from 'web3'
 import truffleContract from 'truffle-contract'
 import jsonProperty from '../build/contracts/Property.json'
+import jsonPropertyToken from '../build/contracts/PropertyToken.json'
 import jsonPropertyRegistry from '../build/contracts/PropertyRegistry.json'
+import getAddress from '@/util/getAddress'
 
 export default {
   name: 'app',
@@ -52,6 +54,7 @@ export default {
       return contract.deployed()
     },
 
+    // Could probably dry up these initContract functions but sticking with what works for time reasons :)
     async initProperty() {
       return new Promise(async (resolve, reject) => {
         const instance = await this.getContract(jsonProperty)
@@ -79,6 +82,31 @@ export default {
                 this.$store.commit('stopLoading')
               }
             }
+          }
+        })
+
+        resolve()
+      })
+    },
+
+    async initPropertyToken() {
+      return new Promise(async (resolve, reject) => {
+        const instance = await this.getContract(jsonPropertyToken)
+        this.$store.commit('setPropertyTokenContract', instance)
+        const propertyTokenContract = this.$store.state.propertyTokenContract
+
+        const event = propertyTokenContract.allEvents({ fromBlock: 0, toBlock: 'latest' })
+        event.watch(async (err, res) => {
+          if (err) {
+            console.log('watch error', err)
+          }
+          else {
+            console.log('got an event', res)
+            const { propertyTokenContract } = this.$store.state
+
+            const address = await getAddress()
+            const balance = await propertyTokenContract.balanceOf(address)
+            this.$store.commit('setTokenBalance', balance.toString())
           }
         })
 
@@ -139,6 +167,7 @@ export default {
   async mounted() {
     this.initWeb3()
     await this.initProperty()
+    await this.initPropertyToken()
     await this.initPropertyRegistry()
     this.$store.commit('isInitialized')
   },

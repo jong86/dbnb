@@ -1,12 +1,9 @@
-import store from '../src/store'
+import getAddress from './getAddress'
 
-function getTxOptions() {
+export default function() {
   return new Promise(async (resolve, reject) => {
     try {
-      let address
-      await store.state.web3.eth.getAccounts((err, result) => {
-        address = result[0]
-      })
+      const address = await getAddress()
       resolve({
         from: address,
         gas: 200000,
@@ -16,5 +13,3 @@ function getTxOptions() {
     }
   })
 }
-
-export default getTxOptions

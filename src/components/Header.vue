@@ -9,6 +9,9 @@
         :key="link.path"
         :path="link.path"
       >{{link.label}}</nav-button>
+      <div class="balance">
+        Your balance: {{ $store.state.tokenBalance }} PPT
+      </div>
     </div>
   </div>
 </template>
@@ -43,6 +46,11 @@ export default {
   }
   h3 {
     margin: 4px;
+  }
+  .balance {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
   }
 }
 </style>

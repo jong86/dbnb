@@ -18,8 +18,5 @@ module.exports = async function(done) {
   const totalSupply = await propertyToken.totalSupply({ from: owner })
   console.log('totalSupply', totalSupply);
 
-  const balanceBob = await propertyToken.balanceOf(bob)
-  console.log('balanceBob', balanceBob);
-
   done()
 }
