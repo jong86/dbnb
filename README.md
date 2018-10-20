@@ -1,26 +1,6 @@
-# client
+# dBNB (Decentralized Bed N Breakfast)
 
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
+### Usage
+* `npm install`
+* `truffle migrate` (network config in `truffle.js`)
+* `npm run serve` (requires Metamask extension)
