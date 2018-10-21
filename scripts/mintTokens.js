@@ -11,11 +11,7 @@ module.exports = async function(done) {
   await propertyToken.mint(bob, 8000000000, { from: owner })
   await propertyToken.mint(alice, 8000000000, { from: owner })
 
-  const balanceOwner = await propertyToken.balanceOf(owner)
-  console.log('balanceOwner', balanceOwner, owner);
-
-  const balanceBob = await propertyToken.balanceOf(bob)
-  console.log('balanceBob', balanceBob, bob);
-
+  console.log("Minted tokens for", owner, bob, alice)
+  
   done()
 }
