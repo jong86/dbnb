@@ -125,7 +125,6 @@ export default {
           // (can't get .map working for some reason here)
           try {
             requested.forEach(async address => {
-              console.log('address', address);
               const isApproved = await propertyRegistryContract.checkIfAddressApproved(propertyId, address, txOptions)
               const times = await propertyRegistryContract.getRequest(propertyId, address, txOptions)
 
