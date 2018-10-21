@@ -92,7 +92,6 @@ export default {
     async initPropertyToken() {
       return new Promise(async (resolve, reject) => {
         const instance = await this.getContract(jsonPropertyToken)
-        console.log('propertyToken instance', instance);
         this.$store.commit('setPropertyTokenContract', instance)
         const propertyTokenContract = this.$store.state.propertyTokenContract
 
@@ -163,9 +162,7 @@ export default {
     async getTokenBalance() {
       const { propertyTokenContract } = this.$store.state
       const address = await getAddress()
-      console.log('address', address);
       const balance = await propertyTokenContract.balanceOf(address)
-      console.log('balance', balance);
       this.$store.commit('setTokenBalance', balance.toString())
     }
   },
