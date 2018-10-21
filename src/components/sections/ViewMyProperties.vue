@@ -120,14 +120,21 @@ export default {
             console.error(e);
           }
 
+
           const requested2 = []
           // (can't get .map working for some reason here)
           try {
-            requested.forEach(async address => requested2.push({
-              address,
-              isApproved: await propertyRegistryContract.checkIfAddressApproved(propertyId, address, txOptions),
-              times: await propertyRegistryContract.getRequest(propertyId, address),
-            }))
+            requested.forEach(async address => {
+              console.log('address', address);
+              const isApproved = await propertyRegistryContract.checkIfAddressApproved(propertyId, address, txOptions)
+              const times = await propertyRegistryContract.getRequest(propertyId, address, txOptions)
+
+              requested2.push({
+                address,
+                isApproved,
+                times,
+              })
+            })
           } catch (e) {
             console.error(e)
           }
