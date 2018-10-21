@@ -1,7 +1,32 @@
 const Property = artifacts.require('./Property.sol')
 const PropertyToken = artifacts.require('./PropertyToken.sol')
 const PropertyRegistry = artifacts.require('./PropertyRegistry.sol')
-import { now } from '../util/time'
+
+function now(multiple = 1, unit) {
+  /* Returns time in seconds, with optional extra time */
+
+  let extraTime = 0
+  switch (unit) {
+    case 'week':
+    case 'weeks':
+      extraTime = multiple * 604800
+      break
+    case 'day':
+    case 'days':
+      extraTime = multiple * 86400
+      break
+    case 'hour':
+    case 'hours':
+      extraTime = multiple * 3600
+      break
+    case 'minute':
+    case 'minutes':
+      extraTime = multiple * 60
+      break
+  }
+
+  return parseInt((Date.now() / 1000) + extraTime)
+}
 
 contract('PropertyRegistry', accounts => {
   const owner = accounts[0  ];
