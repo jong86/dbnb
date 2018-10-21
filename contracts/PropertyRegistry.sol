@@ -72,14 +72,11 @@ contract PropertyRegistry {
 
   function checkIn(uint _tokenId) external {
     require(regProps[_tokenId].isApproved[msg.sender], "You are not approved");
-    require(regProps[_tokenId].requests[msg.sender].checkIn <= now, "It is not time to check-in yet");
-    propertyToken.approve(address(this), regProps[_tokenId].price);
-    require(propertyToken.transferFrom(msg.sender, address(this), regProps[_tokenId].price), "Could not transfer funds");
     regProps[_tokenId].occupant = msg.sender;
     emit CheckIn(_tokenId);
   }
 
-  function checkOut(uint _tokenId) external {
+  function checkOut(uint _tokenId) external payable {
     require(regProps[_tokenId].occupant == msg.sender, "You are not the occupant");
     require(now <= regProps[_tokenId].requests[msg.sender].checkOut, "Time must be before or equal to agreed check-out time");
     require(propertyToken.transfer(property.ownerOf(_tokenId), regProps[_tokenId].price), "Could not transfer funds");
@@ -128,4 +125,6 @@ contract PropertyRegistry {
   function getAllRegProps() external view returns(uint[]) {
     return allRegProps;
   }
+
+  function() external {}
 }
