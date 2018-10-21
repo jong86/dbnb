@@ -1,9 +1,10 @@
 const Property = artifacts.require('./Property.sol')
 const PropertyToken = artifacts.require('./PropertyToken.sol')
 const PropertyRegistry = artifacts.require('./PropertyRegistry.sol')
+import { now } from '../util/time'
 
 contract('PropertyRegistry', accounts => {
-  const owner = accounts[0];
+  const owner = accounts[0  ];
   const alice = accounts[1];
   const bob = accounts[2];
   const eve = accounts[3];
