@@ -1,11 +1,53 @@
 pragma solidity ^0.4.24;
 
-import "openzeppelin-solidity/contracts/token/ERC721/ERC721Basic.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+contract PropertyInterface {
+  event Created(uint _tokenId, string _uri);
+
+  function createProperty() external returns (bool) {}
+
+  function setURI(uint _tokenId, string _uri) external {}
+
+  function createWithURI(string _uri) external {}
+
+  function getURI(uint _tokenId) external view returns (string) {}
+
+  function getProperties() external view returns (uint[]) {}
+
+  function ownerOf(uint256 _tokenId) external view returns (address);
+}
+
+contract PropertyTokenInterface {
+  function totalSupply() external view returns (uint256);
+
+  function balanceOf(address who) external view returns (uint256);
+
+  function allowance(address owner, address spender)
+    external view returns (uint256);
+
+  function transfer(address to, uint256 value) external returns (bool);
+
+  function approve(address spender, uint256 value)
+    external returns (bool);
+
+  function transferFrom(address from, address to, uint256 value)
+    external returns (bool);
+
+  event Transfer(
+    address indexed from,
+    address indexed to,
+    uint256 value
+  );
+
+  event Approval(
+    address indexed owner,
+    address indexed spender,
+    uint256 value
+  );
+}
 
 contract PropertyRegistry {
-  ERC721Basic property;
-  ERC20 propertyToken;
+  PropertyInterface property;
+  PropertyTokenInterface propertyToken;
 
   uint[] public allRegProps;
 
@@ -26,8 +68,8 @@ contract PropertyRegistry {
   }
 
   constructor(address _property, address _propertyToken) public {
-    property = ERC721Basic(_property);
-    propertyToken = ERC20(_propertyToken);
+    property = PropertyInterface(_property);
+    propertyToken = PropertyTokenInterface(_propertyToken);
   }
 
 

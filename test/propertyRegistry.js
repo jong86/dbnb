@@ -29,15 +29,23 @@ function now(multiple = 1, unit) {
 }
 
 contract('PropertyRegistry', accounts => {
-  const owner = accounts[0  ];
+  const owner = accounts[0];
   const alice = accounts[1];
   const bob = accounts[2];
   const eve = accounts[3];
+  let property, propertyToken, propertyRegistry
+
+  beforeEach(async () => {
+    property = await Property.new('A', 'A', { from: owner })
+    propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
+    propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
+
+    await propertyToken.mint(owner, 8000000000, { from: owner })
+    await propertyToken.mint(bob, 8000000000, { from: owner })
+    await propertyToken.mint(alice, 8000000000, { from: owner })
+  })
 
   it('should allow the owner to register a property', async () => {
-    const property = await Property.new('A', 'A', { from: owner })
-    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.registerProperty(tokenId, 123456, { from: owner })
@@ -46,9 +54,6 @@ contract('PropertyRegistry', accounts => {
   })
 
   it('should not allow a non-owner to register a property', async () => {
-    const property = await Property.new('A', 'A', { from: owner})
-    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     try {
@@ -62,9 +67,6 @@ contract('PropertyRegistry', accounts => {
   // Request creation
 
   it('should allow bob to submit a request', async () => {
-    const property = await Property.new('A', 'A', { from: owner})
-    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     const nowTime = now()
@@ -74,9 +76,6 @@ contract('PropertyRegistry', accounts => {
   })
 
   it('should allow alice to submit request after bob has submitted one', async () => {
-    const property = await Property.new('A', 'A', { from: owner})
-    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     const nowTime = now()
@@ -92,9 +91,6 @@ contract('PropertyRegistry', accounts => {
   // Request approvals
 
   it('should allow owner to approve bob\'s request', async () => {
-    const property = await Property.new('A', 'A', { from: owner})
-    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
@@ -104,9 +100,6 @@ contract('PropertyRegistry', accounts => {
   })
 
   it('should not let eve approve bob\'s request', async () => {
-    const property = await Property.new('A', 'A', { from: owner})
-    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
@@ -121,9 +114,6 @@ contract('PropertyRegistry', accounts => {
   // Checking in
 
   it('bob can check-in after owner has approved and the approved time has come', async () => {
-    const property = await Property.new('A', 'A', { from: owner})
-    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
@@ -134,9 +124,6 @@ contract('PropertyRegistry', accounts => {
   })
 
   it('eve cannot check into property, even if correct time has come', async () => {
-    const property = await Property.new('A', 'A', { from: owner})
-    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
@@ -149,9 +136,6 @@ contract('PropertyRegistry', accounts => {
   })
 
   it('bob CANNOT check-in after owner has approved but approved time has NOT come', async () => {
-    const property = await Property.new('A', 'A', { from: owner})
-    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(2, 'days'), now(4, 'days'), { from: bob })
@@ -167,9 +151,6 @@ contract('PropertyRegistry', accounts => {
   // Checking out
 
   it('bob can check-out', async () => {
-    const property = await Property.new('A', 'A', { from: owner})
-    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
@@ -180,10 +161,26 @@ contract('PropertyRegistry', accounts => {
     assert(occupant !== bob, 'could not check out')
   })
 
+  it('bob has less propertyToken after checking out', async () => {
+    const response = await property.createProperty({ from: owner })
+    const tokenId = response.logs[0].args._tokenId
+    await propertyRegistry.registerProperty(tokenId, 20000000)
+    await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
+    await propertyRegistry.approveRequest(tokenId, bob, { from: owner })
+    await propertyRegistry.checkIn(tokenId, { from: bob })
+    const balanceBefore = await propertyToken.balanceOf(bob)
+    try {
+      await propertyRegistry.checkOut(tokenId, { from: bob })
+    } catch (e) {
+      console.log("***************************", e)
+    }
+    // await propertyToken.transfer(alice, 2131241, { from: bob })
+    const balanceAfter = await propertyToken.balanceOf(bob)
+    console.log('balanceBefore, balanceAfter', balanceBefore, balanceAfter);
+    assert(balanceAfter < balanceBefore, '')
+  })
+
   it('eve cannot check-out for bob', async () => {
-    const property = await Property.new('A', 'A', { from: owner})
-    const propertyToken = await PropertyToken.new('A', 'A', 8, { from: owner })
-    const propertyRegistry = await PropertyRegistry.new(property.address, propertyToken.address, { from: owner })
     const response = await property.createProperty({ from: owner })
     const tokenId = response.logs[0].args._tokenId
     await propertyRegistry.request(tokenId, now(), now(2, 'days'), { from: bob })
